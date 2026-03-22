@@ -2,11 +2,12 @@
 // A basic project good for any started. Even ai can make it so i added some interesting functions to extent the terminal
 #include <iostream>
 #include <string>
+#include <iomanip>
 using namespace std; //to be removed sooner-later to decrease bloatware from strings
 //dodging by reference in first functions for safe input
-
 //declaration of mass arithmetic result
-int cnr[1000];
+// Might stop at version 1.5 or 2.0 when i aim to reach 2000 lines of code excluding comments
+int cnr[1001];
 //below are operation algorithms -> will think of which to add for extension
 int mgcd (int a, int b){
     int c=a, d=b;
@@ -19,7 +20,20 @@ int mgcd (int a, int b){
     return d;
 }
 
-int mpow(int a, int b){
+double mpow(double a, int b){
+    if (b==1) return a;
+    else if (b==0) return 1;
+    double c=a;
+    if (b>1){
+        for (int i=1; i<b; i++){
+            c*=a;
+        } 
+        return c;
+    }
+    return 0;
+}
+
+int npow(int a, int b){
     if (b==1) return a;
     else if (b==0) return 1;
     int c=a;
@@ -42,6 +56,15 @@ int numfinder(int a, int b){
     return cnt;
 }
 
+void percents(double a, double b, int s){
+    // let p% of a = b, b<a: => p=100b/a;
+    double mi=(a<b)?a:b;
+    double ma=(a<b)?b:a;
+    double p=(double)mi*100/ma;
+    cout << mi << " represents " <<fixed<<setprecision(s)<<p<<"% of "<<ma;
+    return;
+}
+
 int ogl(int a){
     int c=0, r, d=a;
     while (d!=0){
@@ -56,6 +79,20 @@ int ogl(int a){
 
 // P.S: AI wasnt used to any extend besides advice and minor debugging
 // dodging case switch for now as ill add in a new version
+
+void simpledebt(double a, double b, double r){
+    cout << "TOTAL INTEREST: " << a*(r/100)*b << endl;
+    cout << "YEARLY PAY: " << a*(r/100) << endl;
+    cout << "AVERAGE MONTHLY PAY: " << a*(r/100)/12 << endl;
+    cout << "DAILY IMPACT: " <<fixed<<setprecision(3)<<a*(r/100)/365 << endl;
+}
+
+void complexdebt(double a, double b, double r){
+    cout << "TOTAL INTEREST: " << a*mpow(1+r/100, b) << endl;
+    for (int i=1; i<=b; i++){
+        cout << "YEAR " << i << " INTEREST IS " << a * mpow(1+r/100, i)-a * mpow(1+r/100, i-1) << endl;
+    }
+}
 
 void OperationIdentifier(int a, int b, string operation){
     if (operation=="+"){
@@ -74,8 +111,7 @@ void OperationIdentifier(int a, int b, string operation){
         cout << mgcd(a, b) << endl;
     }
     if (operation=="^"){
-        cout << mpow(a,b) << endl;
-    }
+        cout << npow(a, b) << endl;
     if (operation=="mul2"){
         cout << int(a<<b) << endl; // a * 2^b
     }
@@ -83,7 +119,7 @@ void OperationIdentifier(int a, int b, string operation){
         cout << int(b>>a) << endl; // b / 2^a
     }
     if (operation=="sepmul2"){
-        cout << int(1<<a) << endl;
+        cout << int(1<<a) << endl; //
     }
     if (operation=="sepdiv2"){
         cout << int(1>>a) << endl;
@@ -93,6 +129,48 @@ void OperationIdentifier(int a, int b, string operation){
     }
     if (operation=="ogl"){
         cout << ogl(a) << " " << ogl(b) << endl;
+    }
+}
+}
+
+void FinaOperationIdentifier(string operation){
+    if (operation=="%"){
+        cout << "ENTER PRECISION: ";
+        int p;
+        cin >> p;
+        cout << endl;
+        cout << "ENTER NUMBERS: (a>b) ";
+        double a, b;
+        cin >> a >> b;
+        percents(a, b, p);
+    }
+    if (operation=="simpledebt"){
+        cout << "DEBT: SUM is ... " << endl; // Ds=S*r/100+b
+        double a;
+        cin >> a;
+        cout << endl;
+        cout << "DEBT: YEARS is ... ";
+        double b;
+        cin >> b;
+        cout << endl;
+        cout << "Enter Rate offered by bank: ";
+        double r;
+        cin >> r;
+        simpledebt(a, b, r);
+    }
+    if (operation=="complexdebt"){
+        cout << "DEBT: INITIAL SUM is ... " << endl; // Ds=S*r/100+b
+        double a;
+        cin >> a;
+        cout << endl;
+        cout << "DEBT: YEARS is ... ";
+        double b;
+        cin >> b;
+        cout << endl;
+        cout << "Enter Rate offered by bank: ";
+        double r;
+        cin >> r;
+        complexdebt(a, b, r);
     }
 }
 
@@ -135,6 +213,23 @@ void mastercli(){
     }
 }
 
+void statisticscli(){
+    //good to mention: struct vs class:
+    //struct is good for public datasets and has everything public by default.
+    //To make things easier we will use a class instead with more OOP flavour
+    //leaving this commented for a future version
+    cout << "STATISTIC STAGE" << endl;
+    cout << "STAGE 1: Data typing" << endl;
+    cout << "EXPLANATION: You give the number of values and type of values. accordingly a table can either be generated or the dataset can be worked with" << endl;
+    cout << "STAGE 2: Basic statistics" << endl;
+    cout << "EXPLANATION: There will be calculated the mean, the average, the highest/lowest points, the mode, and based on subgroups and given data there will be given results" << endl;
+    cout << "STAGE 3: Pretty print" << endl;
+    cout << "EXPLANATION: Everything will be printed accordingly." << endl;
+    cout << "ENTER: number of values" << endl;
+/*   stage1();
+    stage2();
+    stage3(); */
+}
 void StringToArray(const string &a, const string &b, int *anr, int *bnr){
     int la=a.length(), lb=b.length();
     int i=-1;
@@ -200,6 +295,14 @@ void masscli(){
     }
 }
 
+void financialcli(){
+    cout << "The Ultra Pro Corporatist Calculator made with good intentions" << endl;
+    cout << "Educational purposes: you will be prompted with questions for a more accurate calculation" << endl;
+    cout << "FINANCE CALC: ";
+    string operation;
+    cin >> operation;
+    FinaOperationIdentifier(operation);
+}
 void help(){
     cout << "Powershell and Linux/MacOS CLI Usage:" << endl;
     cout << "execute: chmod +x ./calc" << endl;
