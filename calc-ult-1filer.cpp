@@ -6,7 +6,7 @@
 using namespace std; //to be removed sooner-later to decrease bloatware from strings
 //dodging by reference in first functions for safe input
 //declaration of algebraic functions and needed constants
-// Might stop at version 1.5 or 2.0 when i aim to reach 2000 lines of code excluding comments
+// Might stop at version 1.5 as i see the extend is getting rather too diverse
 int cnr[1001];
 const double e=2.71828182845904523536;
 const double pi=3.14159265358979323846;
@@ -125,58 +125,58 @@ double spheresurface(double a){
 }
 
 void simpledebt(double a, double b, double r){
-    cout << "TOTAL INTEREST: " << a*(r/100)*b << endl;
-    cout << "YEARLY PAY: " << a*(r/100) << endl;
-    cout << "AVERAGE MONTHLY PAY: " << a*(r/100)/12 << endl;
-    cout << "DAILY IMPACT: " <<fixed<<setprecision(3)<<a*(r/100)/365 << endl;
+    cout << "TOTAL INTEREST: " << a*(r/100)*b << "\n";
+    cout << "YEARLY PAY: " << a*(r/100) << "\n";
+    cout << "AVERAGE MONTHLY PAY: " << a*(r/100)/12 << "\n";
+    cout << "DAILY IMPACT: " <<fixed<<setprecision(3)<<a*(r/100)/365 << "\n";
 }
 
 void complexdebt(double a, double b, double r){
-    cout << "TOTAL INTEREST: " << a*mpow(1+r/100, b)-a << endl;
+    cout << "TOTAL INTEREST: " << a*mpow(1+r/100, b)-a << "\n";
     for (int i=1; i<=b; i++){
-        cout << "YEAR " << i << " INTEREST IS " << a * mpow(1+r/100, i)-a * mpow(1+r/100, i-1) << endl;
+        cout << "YEAR " << i << " INTEREST IS " << a * mpow(1+r/100, i)-a * mpow(1+r/100, i-1) << "\n";
     }
 }
 // as of V1.2.0 all work
 void OperationIdentifier(int a, int b, string operation){
     if (operation=="+"){
-        cout << a+b << endl;
+        cout << a+b << "\n";
     }
     if (operation=="-"){
-        cout << a-b << endl;
+        cout << a-b << "\n";
     }
     if (operation=="*"){
-        cout << a*b << endl;
+        cout << a*b << "\n";
     }
     if (operation=="/"){
-        cout << a/b << endl;
+        cout << a/b << "\n";
     }
     if (operation=="gcd"){
-        cout << mgcd(a, b) << endl;
+        cout << mgcd(a, b) << "\n";
     }
     if (operation=="^"){
-        cout << npow(a, b) << endl;
+        cout << npow(a, b) << "\n";
     }
     if (operation=="mul2"){
-        cout << (double)(a<<b) << endl; // a * 2^b
+        cout << (double)(a<<b) << "\n"; // a * 2^b
     }
     if (operation=="div2"){
-        cout << (double)(b>>a) << endl; // b / 2^a
+        cout << (double)(b>>a) << "\n"; // b / 2^a
     }
     if (operation=="sepmul2"){
-        cout << (double)(1<<a) << endl; //
+        cout << (double)(1<<a) << "\n"; //
     }
     if (operation=="sepdiv2"){
-        cout << (double)(1>>a) << endl;
+        cout << (double)(1>>a) << "\n";
     }
     if (operation=="find"){
-        cout << numfinder(a, b) << endl;
+        cout << numfinder(a, b) << "\n";
     }
     if (operation=="ogl"){
-        cout << ogl(a) << " " << ogl(b) << endl;
+        cout << ogl(a) << " " << ogl(b) << "\n";
     }
     if (operation=="sqrt"){
-        cout << msqrt(a) << " " << msqrt(b) << endl;
+        cout << msqrt(a) << " " << msqrt(b) << "\n";
     }
 }
 
@@ -185,35 +185,35 @@ void FinaOperationIdentifier(string operation){
         cout << "ENTER PRECISION: ";
         int p;
         cin >> p;
-        cout << endl;
+        cout << "\n";
         cout << "ENTER NUMBERS: (a>b) ";
         double a, b;
         cin >> a >> b;
         percents(a, b, p);
     }
     if (operation=="simpledebt"){
-        cout << "DEBT: SUM is ... " << endl; // Ds=S*r/100+b
+        cout << "DEBT: SUM is ... " << "\n"; // Ds=S*r/100+b
         double a;
         cin >> a;
-        cout << endl;
+        cout << "\n";
         cout << "DEBT: YEARS is ... ";
         double b;
         cin >> b;
-        cout << endl;
+        cout << "\n";
         cout << "Enter Rate offered by bank: ";
         double r;
         cin >> r;
         simpledebt(a, b, r);
     }
     if (operation=="complexdebt"){
-        cout << "DEBT: INITIAL SUM is ... " << endl; // Ds=S*r/100+b
+        cout << "DEBT: INITIAL SUM is ... " << "\n"; // Ds=S*r/100+b
         double a;
         cin >> a;
-        cout << endl;
+        cout << "\n";
         cout << "DEBT: YEARS is ... ";
         double b;
         cin >> b;
-        cout << endl;
+        cout << "\n";
         cout << "Enter Rate offered by bank: ";
         double r;
         cin >> r;
@@ -223,25 +223,25 @@ void FinaOperationIdentifier(string operation){
 
 void OperationRealidentifier(double a, double b, string operation){
      if (operation=="+"){
-        cout << a+b << endl;
+        cout << a+b << "\n";
     }
     if (operation=="-"){
-        cout << a-b << endl;
+        cout << a-b << "\n";
     }
     if (operation=="*"){
-        cout << a*b << endl;
+        cout << a*b << "\n";
     }
     if (operation=="/"){
-        cout << a/b << endl;
+        cout << a/b << "\n";
     }
     if (operation=="sqrt"){
-        cout << msqrt(a) << " " << msqrt(b) << endl;
+        cout << msqrt(a) << " " << msqrt(b) << "\n";
     }
     if (operation=="%"){
-        cout << "If the numbers are double this will calculate the percentage of both the smaller one over the larger one and vice versa" << endl;
+        cout << "If the numbers are double this will calculate the percentage of both the smaller one over the larger one and vice versa" << "\n";
         // will need a different % function since it needs precision and fixing of unorder
     }
-    //more limited as the functions are needed manuanlly
+    //more limited as the functions are needed manuanlly and might move each definition to a separate cpp
 }
 void interactivecli(){
     //basic continuous interactive cli
@@ -268,32 +268,170 @@ void mastercli(){
 }
 
 // Statistics functions
+void stage1(int &a, int &c, int &b, int &d){
+    cout << "Enter number of integer values" << "\n";
+    cin >> a;
+    cout << "Enter length of rows for integer values" << "\n";
+    int h;
+    if (a==0){
+        cout << "Enter number of real values" << "\n"; 
+        double c; 
+        cin >> c;
+        cout << "Enter length of rows for real values" << "\n";
+        int g;
+        cin >> g;
+    }
+    else {
+        string e;
+        cout << "Add real numbers?[y/N]" << "\n"; 
+        cin >> e; 
+        if(e=="y"||e=="Y"||e=="Yes"||e=="yes"){
+            cout << "Enter number of real values" << "\n"; 
+            int c; 
+            cin >> c;
+            cout << "Enter length of rows for real values" << "\n";
+            int i;
+            cin >> i;
+        }
+     }
+     cout << "Add char to value correspondence?[y/n]" << "\n";
+     string f;
+     cin >> f;
+     if (f=="y"){
+        cout << "Add strings? [Y/n]" << "\n";
+        string ans;
+        cin >> ans;
+        if(ans=="y"||ans=="Y"||ans=="Yes"||ans=="yes"){
+        cout << "Enter number of strings" << "\n";
+        cin >> b;
+     }
+     cout << "The total number of values is " << d << " " << a << " out of them int, " << b << " out of them strings, " << c << " out of them real!" << "\n";
+    }
+}
 
+void stage2(int a, int c, int b, int rowa, int rowb, int rowc, char **charc, int **integer, double **real) {
+	if (c!=0) {
+		for (int i=1; i<=c; i++) {
+			cout << "Enter char values, Series" << i << " out of " << c;
+			for(int j=1; j<=rowc; j++) {
+				cin >> charc[i][j];
+			}
+		}
+	}
+	if (b!=0) {
+		for (int i=1; i<=b; i++) {
+			cout << "Enter integer values, Series" << i << " out of " << b;
+			for(int j=1; j<=rowb; j++) {
+				cin >> integer[i][j];
+			}
+		}
+	}
+	if (a!=0) {
+		for (int i=1; i<=a; i++) {
+			cout << "Enter real values, Series" << i << " out of " << a;
+			for(int j=1; j<=rowa; j++) {
+				cin >> real[i][j];
+			}
+		}
+	}
+}
+
+// pretty print steps
+// 1: border the matrices
+// 2: asign values in an intermediary matrice (for example 0 for border and lines/chars, 1 for chara, 2 for integer, 3 for real values)
+// 3. print everything according to translation and give an id: make a pointer to the value at that, get the length in chars and add to print
+
+/* void stage3(int a, int c, int b, char **charc, int **integer, int **real){
+    if (c!=0) {
+        for(int i=1; i<=a; i++){
+            for()
+        }
+	}
+	if (b!=0) {
+
+	}
+	if (a!=0) {
+
+	}
+} */
 
 void statisticscli(){
     //good to mention: struct vs class:
     //struct is good for public datasets and has everything public by default.
-    //To make things easier we will use a class instead with more OOP flavour
-    //leaving this commented for a future version
-    cout << "STATISTIC STAGE" << endl;
-    cout << "STAGE 1: Data typing" << endl;
-    cout << "EXPLANATION: You give the number of values and type of values. accordingly a table can either be generated or the dataset can be worked with" << endl;
-    cout << "STAGE 2: Basic statistics" << endl;
-    cout << "EXPLANATION: There will be calculated the mean, the average, the highest/lowest points, the mode, and based on subgroups and given data there will be given results" << endl;
-    cout << "STAGE 3: Pretty print" << endl;
-    cout << "EXPLANATION: Everything will be printed accordingly." << endl;
-    cout << "ENTER: number of values" << endl;
-/*   stage1();
-    stage2();
+    //classes and struct seem deprecated/not what we need for such sweaty statistics, not because i dont like them but because OOP for this project seems uselless
+    //instead we will do a declaration of class after the vector is declared acording to the user
+    cout << "STATISTIC STAGE" << "\n";
+    cout << "STAGE 1: Data typing" << "\n";
+    cout << "EXPLANATION: You give the number of values and type of values. accordingly a table can either be generated or the dataset can be worked with" << "\n";
+    cout << "STAGE 2: Basic statistics" << "\n";
+    cout << "EXPLANATION: There will be calculated the mean, the average, the highest/lowest points, the mode, and based on subgroups and given data there will be given results" << "\n";
+    cout << "EXPLANATION: But first introduce ";
+    cout << "STAGE 3: Pretty print" << "\n";
+    cout << "EXPLANATION: Everything will be printed accordingly." << "\n";
+    cout << "ENTER: number of values" << "\n";
+    int a, b, c, d;
+    stage1(a, c, b, d);
+      /*  stage2();
     stage3(); */
 }
+struct cart2 {
+    double x;
+    double y;
+} cartlist[10001];
 
+void calcdim2(cart2 *cartlist){
+    cout << "Enter shape to work with" << '\n';
+    string shape;
+    cin >> shape;
+    if (shape=="triangle"){
+
+    }
+    else if (shape=="square"){
+
+    }
+    else if (shape=="hexagon"){
+
+    }
+    else if (shape=="circle"){
+
+    }
+    else if (shape=="cartezian"){
+        cout << "Enter number of points to work with" << '\n';
+        int a;
+        cin >> a;
+        double k, j;
+        cout << "WARNING: max points stored go up to 10000, the limit is the one of double" << '\n';
+        for(int i=1; i<=a; i++){
+            cout << "Enter coordinates for point number " << i << " out of " << a << "\n";
+            cin >> cartlist[i].x >> cartlist[i].y;
+        }
+        cout << "What to do?" << '\n';
+        cout << "[1] calculate multidistance (distance between all points) and output in pretty format" << '\n';
+        cout << "[2] calculate certain distance " << '\n';
+        cout << "[3] calculate middle points " << '\n';
+        cout << "[4] calculate slope or make/insert function" << '\n'; // insert as in to find out which points correspond to that ecuation and correspondence x and y
+    }
+}
 void geometrycli(){
-    cout << "GEOMETRY CALCULATOR" << endl;
-    cout << "CHOOSE MODE: [1] cartezian/euclidean 2D calculation" << endl;
-    cout << "             [2] cartezian/euclidean 3D calculation" << endl;
-    cout << "             [3] trigonometric values" << endl;
-    cout << "             [4] calculus" << endl;                
+    cout << "GEOMETRY CALCULATOR" << "\n";
+    cout << "This mode isnt responsible for any simulation of the provided shapes" << "\n";
+    cout << "CHOOSE MODE: [1] cartezian/euclidean 2D calculation" << "\n";
+    cout << "             [2] cartezian/euclidean 3D calculation" << "\n";
+    cout << "             [3] trigonometric values" << "\n";
+    cout << "             [4] calculus" << "\n";
+    int choice;
+    if(choice==1){
+        // calcdim2
+    }
+    else if (choice==2){
+        // calcdim3
+    }
+    else if (choice==3){
+        // trigarith, to be coded soon
+    }   
+    else {
+         // calculuscli(); //only outputs rules as i didnt learn calculus
+    }             
 }
 void StringToArray(const string &a, const string &b, int *anr, int *bnr){
     int la=a.length(), lb=b.length();
@@ -371,12 +509,12 @@ void ArrayToString(string &c, int *cnr, int ma){
 
 void masscli(){
     // might be extended to up too  1000 digits if things go well
-    cout << "------------------------------------------------------------WARNING-----------------------------------------------------" << endl;
-    cout << "This mode supports numbers with 1000!" << endl;
-    cout << "Method: from string it becomes a table of 100 then arithmetic is done manuanlly for each and saved in a separate array" << endl;
-    cout << "Manually codes since im too lazy and id like to make the project worth the effort" << endl;
-    cout << "As of V1.1.0, the only avabile operation for this mode is +" << endl;
-    cout << "--------------------------------------------------------END OF WARNING--------------------------------------------------" << endl;
+    cout << "------------------------------------------------------------WARNING-----------------------------------------------------" << "\n";
+    cout << "This mode supports numbers with 1000!" << "\n";
+    cout << "Method: from string it becomes a table of 100 then arithmetic is done manuanlly for each and saved in a separate array" << "\n";
+    cout << "Manually codes since im too lazy and id like to make the project worth the effort" << "\n";
+    cout << "As of V1.1.0, the only avabile operation for this mode is +" << "\n";
+    cout << "--------------------------------------------------------END OF WARNING--------------------------------------------------" << "\n";
     string a, b, operation;
     while (true){
     cout << "CALC: ";
@@ -390,14 +528,14 @@ void masscli(){
         StringToArray(a, b, anr, bnr);
         ArithmeticIdentifier(anr, bnr, cnr, la, lb, operation, ma);
         ArrayToString(c, cnr, ma);
-        cout << c << endl;
+        cout << c << "\n";
         }
     }
 }
 
 void financialcli(){
-    cout << "The Ultra Pro Corporatist Calculator made with good intentions" << endl;
-    cout << "Educational purposes: you will be prompted with questions for a more accurate calculation" << endl;
+    cout << "The Ultra Pro Corporatist Calculator made with good intentions" << "\n";
+    cout << "Educational purposes: you will be prompted with questions for a more accurate calculation" << "\n";
     cout << "FINANCE CALC: ";
     string operation;
     cin >> operation;
@@ -405,17 +543,17 @@ void financialcli(){
 }
 
 void help(){
-    cout << "Powershell and Linux/MacOS CLI Usage:" << endl;
-    cout << "execute: chmod +x ./calc" << endl;
-    cout << "usage: ./calc <a> <b> <operation>" << endl;
-    cout << "--------------------------------------" << endl;
-    cout << "Windows CMD usage" << endl;
-    cout << "execute: chmod +x .\\calc" << endl;
-    cout << "usage: .\\calc <a> <b> <operation>" << endl;
-    cout << "The program cant be run yet without ./ as its a prealpha version and isnt compiled yet" << endl;
-    cout << "--------------------------------------" << endl;
-    cout << "Interactive Usage" << endl;
-    cout << "<operation> <a> <b>" << endl; //Bug assesment: infinite loop if used same as general syntax
+    cout << "Powershell and Linux/MacOS CLI Usage:" << "\n";
+    cout << "execute: chmod +x ./calc" << "\n";
+    cout << "usage: ./calc <a> <b> <operation>" << "\n";
+    cout << "--------------------------------------" << "\n";
+    cout << "Windows CMD usage" << "\n";
+    cout << "execute: chmod +x .\\calc" << "\n";
+    cout << "usage: .\\calc <a> <b> <operation>" << "\n";
+    cout << "The program cant be run yet without ./ as its a prealpha version and isnt compiled yet" << "\n";
+    cout << "--------------------------------------" << "\n";
+    cout << "Interactive Usage" << "\n";
+    cout << "<operation> <a> <b>" << "\n"; //Bug assesment: infinite loop if used same as general syntax, will fix next version with updated help guide
 }
 
 int main(int argc, char *argv[]){
@@ -437,7 +575,7 @@ int main(int argc, char *argv[]){
     }
     else {
         if(argc < 5 ){
-            cout << "Use --help for more" << endl;
+            cout << "Use --help for more" << "\n";
             help();
             return 1;
         }
