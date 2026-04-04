@@ -3,11 +3,25 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-//dodging by reference in first functions for safe input
 //declaration of algebraic functions and needed constants
 // Might stop at version 1.5 as i see the extend is getting rather too diverse
 const double e=2.71828182845904523536;
 const double pi=3.14159265358979323846;
+const double ln2=0.6931471805599453;
+//safe input template made for more security hardening, useful for a future patch, probably 1.3.5
+/*
+template <typename T>
+T safeInput(const std::string &prompt) {
+    T value;
+    while (true) {
+        std::cout << prompt;
+        if (std::cin >> value) return value;
+        std::cin.clear();
+        std::cin.ignore(1000, '\n');
+        std::cout << "Invalid input, try again\n";
+    }
+}*/
+
 //below are operation algorithms -> will think of which to add for extension
 int mgcd (int a, int b){
     int c=a, d=b;
@@ -47,6 +61,20 @@ int npow(int a, int b){
     }
     return 0;
 }
+
+void toFraction(double exp, int &p, int &q) {
+    q = 1;
+    while (exp - (int)exp > 0.000001) {
+        exp *= 10;
+        q *= 10;
+    }
+    p = (int)exp;
+    int g = mgcd(p < 0 ? -p : p, q);
+    p /= g;
+    q /= g;
+    std::cout << p << "/" << q;
+}
+
 double msqrt(double a){
     if (a<0) return -1;
     double c=a, c1=1;
@@ -55,6 +83,59 @@ double msqrt(double a){
         c=(c+a/c)/2; // Newton
     }
     return c;
+}
+
+double nthroot(double a, int n){
+    if (a < 0 && n % 2 == 0) return -1;
+    double x = a / n;
+    double x1;
+    for (int i = 0; i < 1000; i++) {
+        x1 = ((n - 1) * x + a / mpow(x, n - 1)) / n; // Newton again
+        if (x1 - x < 0.00000001 && x - x1 < 0.00000001) break;
+        x = x1;
+    }
+    return x1;
+}
+//ln and log models
+double mln(double a) {
+    if (a <= 0) return -1;
+    // Reduce: if a is large, use ln(a) = ln(a/2) + ln(2)
+    int k = 0;
+    while (a > 1.5) { a /= 2.0; k++; }
+    while (a < 0.5) { a *= 2.0; k--; }
+    // Now a is near 1, series converges fast
+    double z = (a - 1.0) / (a + 1.0);
+    double z2 = z * z;
+    double term = z;
+    double result = z;
+    for (int i = 1; i < 100; i++) {
+        term *= z2;
+        result += term / (2 * i + 1);
+    }
+    return 2.0 * result + k * ln2;
+}
+
+double mlog(double a, double base) {
+    return mln(a) / mln(base);
+}
+
+
+double meexp(double x) {
+    // e^x Taylor: 1 + x + x^2/2! + x^3/3! ...
+    double result = 1.0, term = 1.0;
+    for (int i = 1; i < 150; i++) {
+        term *= x / i;
+        result += term;
+        if (term < 0.000000000001 && term > -0.000000000001) break;
+    }
+    return result;
+}
+
+double mfpow(double a, double b) {
+    if (a == 0) return 0;
+    if (b == 0) return 1;
+    if (a < 0) return -1;
+    return meexp(b * mln(a));
 }
 
 int numfinder(int a, int b){
@@ -154,8 +235,23 @@ void OperationIdentifier(int a, int b, std::string operation){
     if (operation=="gcd"){
         std::cout << mgcd(a, b) << "\n";
     }
+    if (operation=="frac"){
+        int c, d;
+        toFraction(a, c, d);
+        std::cout << " ";
+        toFraction(b, c, d);
+    }
     if (operation=="^"){
         std::cout << npow(a, b) << "\n";
+    }
+    if (operation=="logb"){
+        std::cout << "Enter [real number] base:\n";
+        double base;
+        std::cin >> base;
+        std::cout << mlog(a, base) << " " << mlog(b, base) << "\n";
+    }
+    if (operation=="ln"){
+        std::cout << mln(a) << " " << mln(b) << "\n";
     }
     if (operation=="mul2"){
         std::cout << (double)(a<<b) << "\n"; // a * 2^b
@@ -236,6 +332,19 @@ void OperationRealidentifier(double a, double b, std::string operation){
     }
     if (operation=="sqrt"){
         std::cout << msqrt(a) << " " << msqrt(b) << "\n";
+    }
+    if (operation=="pow"){
+        std::cout << mfpow(a, b) << "\n";
+    }
+    if (operation=="nroot"){
+        int n;
+        std::cout << "Integer power" << "\n";
+        std::cout << "Enter n peasent:\n";
+        std::cin >> n;
+        std::cout << nthroot(a, n) << " " << nthroot(b, n) << "\n";
+    }
+    if (operation=="epow"){
+        std::cout << meexp(a) << " " << meexp(b) << "\n";
     }
     if (operation=="%"){
         std::cout << "If the numbers are double this will calculate the percentage of both the smaller one over the larger one and vice versa" << "\n";
@@ -347,16 +456,24 @@ void stage2(int columns, int columnschar, int columnsreal, int a, int c, int b, 
 // 2: asign values in an intermediary matrice (for example 0 for border and lines/chars, 1 for chara, 2 for integer, 3 for real values)
 // 3. print everything according to translation and give an id: make a pointer to the value at that, get the length in chars and add to print
 
-/* void stage3(int a, int c, int b, char **charc, int **integer, int **real){
+/* void stage3(int a, int c, int b, char **charc, int **integer, int **real, char **final){
     if (c!=0) {
-        for(int i=1; i<=a; i++){
-            for(int j=1; j<=a+b+c; j++){
-            
+    char[0][0]='0';
+    char[c+1][c+1]='0';
+    char[0][c+1]='0';
+    char[c+1][0]='0';
+        for(int i=1; i<=c; i++){
+        charc[0][i]='_';
+        charc[i][0]='|';
+        }
+        for(int i=0; i<=c; i++){
+            for(int j=0; j<=c; j++){
+                final[i][j]=charc[i][j];
             }
         }
 	}
 	if (b!=0) {
-
+        
 	}
 	if (a!=0) {
 
@@ -392,12 +509,75 @@ void calcmidpoint(double x1, double y1, double x2, double y2, double &xmid, doub
     xmid=(x1+x2)/2;
 }
 
+/*void calcalldist(double x1, double y1, double x2, double y2, double &disx, double &disy){
+    disx=
+    disy=
+}*/
+
+double xcoef[20];
+//might change to a more dynamic approach
+void coeficientruler(std::string f, double *xcoef, double x1, double y1){
+    int j=1;
+    for (int i=1; i<=20; i++){
+        if(f.at(i)-'0'>=0&&f.at(i)-'0'<=9){
+            xcoef[++j]=(double)f.at(i);
+        }
+        else continue;
+    }
+    int res=0;
+    for(int k=j; k>=1; k--){
+        if(xcoef[k]!=0){
+            res+=xcoef[k]*mpow(x1, j);
+        }
+        else continue;
+    }
+    if (res==y1) {
+        std::cout << "Point belongs to function f(x) = " << f << "\n";
+    }
+    else std::cout << "Point doesnt belongs to function f(x) = " << f << "\n";
+}
+
 void calcdim2(cart2 *cartlist){
     std::cout << "Enter shape to work with" << '\n';
     std::string shape;
     std::cin >> shape;
     if (shape=="triangle"){
+        std::cout << "Select type [echilateral/isoceles/any]:\n";
+        std::string type;
+        std::cin >> type;
+        double l1, l2, l3;
+        double a1, a2, a3; 
+        if (type=="echilateral"){
+            std::cout << "Enter a length:\n";
+            std::cin >> l1;
+            std::cout << "All angles are OBVIOUSLY 60 degrees\n";
+            std::cout << "All heights are " << l1*msqrt(3)/2 << "\n";
+            std::cout << "";
+        }
+        else if(type=="isoceles"){
 
+        }
+        else if(type=="any"){
+            std::cout << "Select what to give [2l1a/1l2a/3l]:\n";
+            std::string sol;
+            std::cin >> sol;
+            std::cout << "First will check if triangle you yapping is valid or if it isnt, trust issues of the user\n";
+            if(sol=="2l1a"){
+                std::cout << "Anyway, enter the 2 sides and the angle [between/next to] them\n";
+                std::cin >> l1 >> l2;
+                std::cout << "Is the angle next to or between the sides?\n";
+                std::string chois;
+                std::cin >> chois;
+                std::cout << "Enter the Angle:\n";
+                if(chois=="next to"){
+                    std::cin >> a2;
+                }
+                else {
+                    std::cin >> a1;
+                    
+                }
+            }
+        }
     }
     else if (shape=="square"){
         double l;
@@ -438,6 +618,11 @@ void calcdim2(cart2 *cartlist){
         std::cin>>radius;
         std::cout<< "AREA: " << circlearea(radius) << "\n";
         std::cout<< "Barely anything else to calculate so here is a short lesson about them" << "\n";
+        std::cout << "DEF: A circle just means we take all points away from a certain distance at the center called radius\n";
+        std::cout << "The equation of a circle is x squared + y squared = radius length\n";
+        std::cout << "The circle can cointain the cubic roots of 1/-1 in which case we do trigonometry. They all contain these\n";
+        std::cout << "We define sine as the x coordinate of a point in the circle and cosine as the y coordinate of a point in a circle\n";
+        std::cout << "Done.\n";
     }
     else if (shape=="cartezian"){
         std::cout << "Enter number of points to work with" << '\n';
@@ -456,7 +641,7 @@ void calcdim2(cart2 *cartlist){
         std::cout << "[4] calculate slope or make/insert function" << '\n'; // insert as in to find out which points correspond to that equation and correspondence x and y
         int task;
         std::cin >> task;
-        if(task==1){
+        if(task==1){ 
 
         }
         else if(task==3){
@@ -485,6 +670,9 @@ void calcdim2(cart2 *cartlist){
             std::cout << "f(x)=";
             std::string function;
             std::cin >> function;
+            std::cout << "This mode supports functions of up to x to the 5th/quintic polynomials\n";
+            std::cout << "It is advised to put the function in order for a good calculation\n";
+            
         }
     }
 }
@@ -591,7 +779,7 @@ void masscli(int *cnr){
     std::cout << "This mode supports numbers with 1000!" << "\n";
     std::cout << "Method: from std::string it becomes a table of 100 then arithmetic is done manuanlly for each and saved in a separate array" << "\n";
     std::cout << "Manually codes since im too lazy and id like to make the project worth the effort" << "\n";
-    std::cout << "As of V1.1.0, the only avabile operation for this mode is +" << "\n";
+    std::cout << "As of V1.1.0, the only avabile operation for this mode is + and -" << "\n";
     std::cout << "--------------------------------------------------------END OF WARNING--------------------------------------------------" << "\n";
     std::string a, b, operation;
     while (true){
