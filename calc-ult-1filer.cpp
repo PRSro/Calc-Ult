@@ -8,8 +8,7 @@
 const double e=2.71828182845904523536;
 const double pi=3.14159265358979323846;
 const double ln2=0.6931471805599453;
-//safe input template made for more security hardening, useful for a future patch, probably 1.3.5
-/*
+//safe input template made for more security hardening, useful for a future patch, probably 1.3.5, very similar to Python
 template <typename T>
 T safeInput(const std::string &prompt) {
     T value;
@@ -20,8 +19,7 @@ T safeInput(const std::string &prompt) {
         std::cin.ignore(1000, '\n');
         std::cout << "Invalid input, try again\n";
     }
-}*/
-
+}
 //below are operation algorithms -> will think of which to add for extension
 int mgcd (int a, int b){
     int c=a, d=b;
@@ -246,8 +244,7 @@ void OperationIdentifier(int a, int b, std::string operation){
     }
     if (operation=="logb"){
         std::cout << "Enter [real number] base:\n";
-        double base;
-        std::cin >> base;
+        double base=safeInput<double>("Enter [real number] base:");
         std::cout << mlog(a, base) << " " << mlog(b, base) << "\n";
     }
     if (operation=="ln"){
@@ -278,41 +275,29 @@ void OperationIdentifier(int a, int b, std::string operation){
 
 void FinaOperationIdentifier(std::string operation){
     if (operation=="%"){
-        std::cout << "ENTER PRECISION: ";
-        int p;
-        std::cin >> p;
+        int p=safeInput<int>("ENTER PRECISION: ");
         std::cout << "\n";
-        std::cout << "ENTER NUMBERS: (a>b) ";
-        double a, b;
-        std::cin >> a >> b;
+        std::cout << "ENTER NUMBERS: (a>b, double)\n";
+        double a=safeInput<double>("ENTER NUMBER a: "); 
+        double b=safeInput<double>("ENTER NUMBER b: ");
         percents(a, b, p);
     }
     if (operation=="simpledebt"){
-        std::cout << "DEBT: SUM is ... " << "\n"; // Ds=S*r/100+b
-        double a;
-        std::cin >> a;
+        double a=safeInput<double>("DEBT: SUM is ... ");
         std::cout << "\n";
-        std::cout << "DEBT: YEARS is ... ";
-        double b;
-        std::cin >> b;
+        double b=safeInput<double>("DEBT: YEARS are ... ");
         std::cout << "\n";
-        std::cout << "Enter Rate offered by bank: ";
-        double r;
-        std::cin >> r;
+        double r=safeInput<double>("Enter Rate offered by bank: ");
         simpledebt(a, b, r);
     }
     if (operation=="complexdebt"){
-        std::cout << "DEBT: INITIAL SUM is ... " << "\n"; // Ds=S*r/100+b
-        double a;
-        std::cin >> a;
+        // Ds=S*r/100+b
+        double a=safeInput<double>("DEBT: INITIAL SUM is ... ");
         std::cout << "\n";
-        std::cout << "DEBT: YEARS is ... ";
-        double b;
-        std::cin >> b;
+        double b=safeInput<double>("DEBT: YEARS are ... ");
         std::cout << "\n";
-        std::cout << "Enter Rate offered by bank: ";
-        double r;
-        std::cin >> r;
+        double r=safeInput<double>("Enter Rate offered by bank: ");
+        std::cout << "\n";
         complexdebt(a, b, r);
     }
 }
@@ -337,167 +322,338 @@ void OperationRealidentifier(double a, double b, std::string operation){
         std::cout << mfpow(a, b) << "\n";
     }
     if (operation=="nroot"){
-        int n;
         std::cout << "Integer power" << "\n";
-        std::cout << "Enter n peasent:\n";
-        std::cin >> n;
-        std::cout << nthroot(a, n) << " " << nthroot(b, n) << "\n";
+        int n=safeInput<int>("Enter root order: ");
+        std::cout << "\n" << nthroot(a, n) << " " << nthroot(b, n) << "\n";
     }
     if (operation=="epow"){
         std::cout << meexp(a) << " " << meexp(b) << "\n";
     }
     if (operation=="%"){
         std::cout << "If the numbers are double this will calculate the percentage of both the smaller one over the larger one and vice versa" << "\n";
-        std::cout << "Enter precision: " << "\n";
-        int p;
-        std::cin >> p;
+        int p = safeInput<int>("Enter precision: ");
         percents(a, b, p);
         std::cout << "\n";
     }
     //more limited as the functions are needed manuanlly and might move each definition to a separate cpp
 }
+
 void interactivecli(){
-    //basic continuous interactive cli
     int a, b;
     std::string operation;
     while(true){
-        std::cout << "CALC:";
-        std::cin >> operation;
+        operation = safeInput<std::string>("CALC: ");
         if (operation=="exit") return;
-        else {std::cin >> a >> b;  OperationIdentifier(a, b, operation);}
+        a = safeInput<int>("Enter A: ");
+        b = safeInput<int>("Enter B: ");
+        OperationIdentifier(a, b, operation);
     }
 }
 
 void mastercli(){
-    //master mode for real numbers
     double a, b;
     std::string operation;
-    while (true){
-        std::cout << "CALC: ";
-        std::cin >> operation;
-        if (operation=="exit")return;
-        else{std::cin >> a >> b; OperationRealidentifier(a, b, operation);}
+    while(true){
+        operation = safeInput<std::string>("CALC: ");
+        if (operation=="exit") return;
+        a = safeInput<double>("Enter A: ");
+        b = safeInput<double>("Enter B: ");
+        OperationRealidentifier(a, b, operation);
     }
 }
+//Smart Statistics funtions remade from scratc
+//Container replacing multi parser
+struct StatData {
+    int numInt, numReal, numStr;
+    int rowInt, rowReal, rowStr;
+    int total;
+    int **integers;
+    double **reals;
+    std::string **strings;
+};
 
-// Statistics functions
-void stage1(int &columns, int &a, int &c, int &b, int &d, int &g){
-    std::cout << "The number of colums will be set to ...";
-    std::cin >> columns;
-    std::cout << "Enter number of integer values" << "\n";
-    std::cin >> a;
-    std::cout << "Enter length of rows for integer values" << "\n";
-    int h;
-    std::cin >> h;
-    if (a==0){
-        std::cout << "Enter number of real values" << "\n"; 
-        std::cin >> c;
-        std::cout << "Enter length of rows for real values" << "\n";
-        int g;
-        std::cin >> g;
-    }
-    else {
-        std::string e;
-        std::cout << "Add real numbers?[y/N]" << "\n"; 
-        std::cin >> e; 
-        if(e=="y"||e=="Y"||e=="Yes"||e=="yes"){
-            std::cout << "Enter number of real values" << "\n"; 
-            std::cin >> c;
-            std::cout << "Enter length of rows for real values" << "\n";
-            int g;
-            std::cin >> g;
-        }
-     }
-     std::cout << "Add char to value correspondence?[y/n]" << "\n";
-     std::string f;
-     std::cin >> f;
-     if (f=="y"){
-        std::cout << "Add strings? [Y/n]" << "\n";
-        std::string ans;
-        std::cin >> ans;
-        if(ans=="y"||ans=="Y"||ans=="Yes"||ans=="yes"){
-        std::cout << "Enter number of strings" << "\n";
-        std::cin >> b;
-     }
-     d=a+b+c;
-     std::cout << "The total number of values is " << d << " " << a << " out of them int, " << b << " out of them std::strings, " << c << " out of them real!" << "\n";
-    }
+bool yesno(const std::string &prompt) {
+    std::string ans = safeInput<std::string>(prompt);
+    return (ans=="y"||ans=="Y"||ans=="yes"||ans=="Yes");
 }
 
-void stage2(int columns, int columnschar, int columnsreal, int a, int c, int b, int rowa, int rowb, int rowc, char **charc, int **integer, double **real) {
-	if (c!=0) {
-		for (int i=1; i<=columnschar; i++) {
-			std::cout << "Enter char values, Series" << i << " out of " << c;
-			for(int j=1; j<=c; j++) {
-				std::cin >> charc[i][j];
-			}
-		}
-	}
-	if (b!=0) {
-		for (int i=1; i<=columns; i++) {
-			std::cout << "Enter integer values, Series" << i << " out of " << b;
-			for(int j=1; j<=b; j++) {
-				std::cin >> integer[i][j];
-			}
-		}
-	}
-	if (a!=0) {
-		for (int i=1; i<=columnsreal; i++) {
-			std::cout << "Enter real values, Series" << i << " out of " << a;
-			for(int j=1; j<=a; j++) {
-				std::cin >> real[i][j];
-			}
-		}
-	}
+void stage1(StatData &d) {
+    d.numInt  = safeInput<int>("Enter number of integer columns: ");
+    d.rowInt  = (d.numInt > 0) ? safeInput<int>("Enter number of rows for integers: ") : 0;
+
+    if (d.numInt == 0 || yesno("Add real number columns? [y/n]: ")) {
+        d.numReal = safeInput<int>("Enter number of real columns: ");
+        d.rowReal = safeInput<int>("Enter number of rows for reals: ");
+    } else {
+        d.numReal = 0;
+        d.rowReal = 0;
+    }
+
+    if (yesno("Add string columns? [y/n]: ")) {
+        d.numStr = safeInput<int>("Enter number of string columns: ");
+        d.rowStr = safeInput<int>("Enter number of rows for strings: ");
+    } else {
+        d.numStr = 0;
+        d.rowStr = 0;
+    }
+
+    d.total = d.numInt + d.numReal + d.numStr;
+    std::cout << "Total columns: " << d.total
+              << " | Int: "    << d.numInt
+              << " | Real: "   << d.numReal
+              << " | String: " << d.numStr << "\n";
 }
 
-// pretty print steps
-// 1: border the matrices
-// 2: asign values in an intermediary matrice (for example 0 for border and lines/chars, 1 for chara, 2 for integer, 3 for real values)
-// 3. print everything according to translation and give an id: make a pointer to the value at that, get the length in chars and add to print
-
-/* void stage3(int a, int c, int b, char **charc, int **integer, int **real, char **final){
-    if (c!=0) {
-    char[0][0]='0';
-    char[c+1][c+1]='0';
-    char[0][c+1]='0';
-    char[c+1][0]='0';
-        for(int i=1; i<=c; i++){
-        charc[0][i]='_';
-        charc[i][0]='|';
-        }
-        for(int i=0; i<=c; i++){
-            for(int j=0; j<=c; j++){
-                final[i][j]=charc[i][j];
+void stage2(StatData &d) {
+    // allocate and fill integers
+    if (d.numInt > 0) {
+        d.integers = new int*[d.numInt];
+        for (int i = 0; i < d.numInt; i++) {
+            d.integers[i] = new int[d.rowInt];
+            std::cout << "Integer column " << i+1 << " of " << d.numInt << ":\n";
+            for (int j = 0; j < d.rowInt; j++) {
+                d.integers[i][j] = safeInput<int>("  value: ");
             }
         }
-	}
-	if (b!=0) {
-        
-	}
-	if (a!=0) {
+    }
+    // allocate and fill reals
+    if (d.numReal > 0) {
+        d.reals = new double*[d.numReal];
+        for (int i = 0; i < d.numReal; i++) {
+            d.reals[i] = new double[d.rowReal];
+            std::cout << "Real column " << i+1 << " of " << d.numReal << ":\n";
+            for (int j = 0; j < d.rowReal; j++) {
+                d.reals[i][j] = safeInput<double>("  value: ");
+            }
+        }
+    }
+    // allocate and fill strings
+    if (d.numStr > 0) {
+        d.strings = new std::string*[d.numStr];
+        for (int i = 0; i < d.numStr; i++) {
+            d.strings[i] = new std::string[d.rowStr];
+            std::cout << "String column " << i+1 << " of " << d.numStr << ":\n";
+            for (int j = 0; j < d.rowStr; j++) {
+                d.strings[i][j] = safeInput<std::string>("  value: ");
+            }
+        }
+    }
+}
 
-	}
-} */
+void stage3(StatData &d) {
+    // column widths for pretty print
+    int colw = 12;
 
-void statisticscli(){
-    //good to mention: struct vs class:
-    //struct is good for public datasets and has everything public by default.
-    //classes and struct seem deprecated/not what we need for such sweaty statistics, not because i dont like them but because OOP for this project seems useless
-    //instead we will do a declaration of struct after the vector is declared acording to the user
-    std::cout << "STATISTIC STAGE" << "\n";
-    std::cout << "STAGE 1: Data typing" << "\n";
-    std::cout << "EXPLANATION: You give the number of values and type of values. accordingly a table can either be generated or the dataset can be worked with" << "\n";
-    std::cout << "STAGE 2: Basic statistics" << "\n";
-    std::cout << "EXPLANATION: There will be calculated the mean, the average, the highest/lowest points, the mode, and based on subgroups and given data there will be given results" << "\n";
-    std::cout << "EXPLANATION: But first introduce ";
-    std::cout << "STAGE 3: Pretty print" << "\n";
-    std::cout << "EXPLANATION: Everything will be printed accordingly." << "\n";
-    std::cout << "ENTER: number of values" << "\n";
-    int a, b, c, d, g, columns;
-    stage1(columns, a, c, b, d, g);
-      /*  stage2();
-    stage3(); */
+    // top border
+    std::cout << "+";
+    for (int i = 0; i < d.total; i++) {
+        for (int k = 0; k < colw; k++) std::cout << "-";
+        std::cout << "+";
+    }
+    std::cout << "\n";
+
+    // header row
+    std::cout << "|";
+    int col = 0;
+    for (int i = 0; i < d.numInt;  i++) { std::cout << std::setw(colw) << ("INT_"  + std::to_string(i+1)) << "|"; col++; }
+    for (int i = 0; i < d.numReal; i++) { std::cout << std::setw(colw) << ("REAL_" + std::to_string(i+1)) << "|"; col++; }
+    for (int i = 0; i < d.numStr;  i++) { std::cout << std::setw(colw) << ("STR_"  + std::to_string(i+1)) << "|"; col++; }
+    std::cout << "\n";
+
+    // divider
+    std::cout << "+";
+    for (int i = 0; i < d.total; i++) {
+        for (int k = 0; k < colw; k++) std::cout << "-";
+        std::cout << "+";
+    }
+    std::cout << "\n";
+
+    // rows — find max row count across all column types
+    int maxrows = 0;
+    if (d.numInt  > 0 && d.rowInt  > maxrows) maxrows = d.rowInt;
+    if (d.numReal > 0 && d.rowReal > maxrows) maxrows = d.rowReal;
+    if (d.numStr  > 0 && d.rowStr  > maxrows) maxrows = d.rowStr;
+
+    for (int j = 0; j < maxrows; j++) {
+        std::cout << "|";
+        for (int i = 0; i < d.numInt;  i++) {
+            if (j < d.rowInt)  std::cout << std::setw(colw) << d.integers[i][j];
+            else               std::cout << std::setw(colw) << " ";
+            std::cout << "|";
+        }
+        for (int i = 0; i < d.numReal; i++) {
+            if (j < d.rowReal) std::cout << std::setw(colw) << d.reals[i][j];
+            else               std::cout << std::setw(colw) << " ";
+            std::cout << "|";
+        }
+        for (int i = 0; i < d.numStr;  i++) {
+            if (j < d.rowStr)  std::cout << std::setw(colw) << d.strings[i][j];
+            else               std::cout << std::setw(colw) << " ";
+            std::cout << "|";
+        }
+        std::cout << "\n";
+    }
+
+    // bottom border
+    std::cout << "+";
+    for (int i = 0; i < d.total; i++) {
+        for (int k = 0; k < colw; k++) std::cout << "-";
+        std::cout << "+";
+    }
+    std::cout << "\n";
+}
+
+void stage4(StatData &d) {
+    std::cout << "\nSTAGE 4: Dataset Computation\n";
+    std::cout << "Available column types and indices:\n";
+
+    // show what columns exist so user knows what to pick
+    for (int i = 0; i < d.numInt;  i++) std::cout << "  INT_"  << i+1 << "  (integer)\n";
+    for (int i = 0; i < d.numReal; i++) std::cout << "  REAL_" << i+1 << " (real)\n";
+    for (int i = 0; i < d.numStr;  i++) std::cout << "  STR_"  << i+1 << "  (string)\n";
+
+    std::cout << "\nSelect column A type [int/real]: ";
+    std::string typeA = safeInput<std::string>("");
+    std::cout << "Select column A index (1-based): ";
+    int idxA = safeInput<int>("") - 1;
+
+    std::cout << "Select column B type [int/real]: ";
+    std::string typeB = safeInput<std::string>("");
+    std::cout << "Select column B index (1-based): ";
+    int idxB = safeInput<int>("") - 1;
+
+    // validate indices
+    bool validA = (typeA=="int"  && idxA >= 0 && idxA < d.numInt)  ||
+                  (typeA=="real" && idxA >= 0 && idxA < d.numReal);
+    bool validB = (typeB=="int"  && idxB >= 0 && idxB < d.numInt)  ||
+                  (typeB=="real" && idxB >= 0 && idxB < d.numReal);
+
+    if (!validA || !validB) {
+        std::cout << "Invalid column selection.\n";
+        return;
+    }
+
+    std::cout << "\nAvailable operations:\n";
+    std::cout << "  Arithmetic : +  -  *  /\n";
+    std::cout << "  Power      : pow (real^real)\n";
+    std::cout << "  Roots      : sqrt  nroot\n";
+    std::cout << "  Log        : ln  logb\n";
+    std::cout << "  Integer    : gcd  ^  mul2  div2  find  ogl\n";
+    std::cout << "  Output     : frac\n";
+    std::cout << "NOTE: integer-only ops require int columns\n";
+    std::string operation = safeInput<std::string>("Operation: ");
+    // determine row count — use the shorter column to avoid out of bounds
+    int rowA = (typeA=="int") ? d.rowInt  : d.rowReal;
+    int rowB = (typeB=="int") ? d.rowInt  : d.rowReal;
+    int rows = (rowA < rowB) ? rowA : rowB;
+    std::cout << "\nResults (" << rows << " rows):\n";
+    std::cout << "+------------+------------+------------+\n";
+    std::cout << "|      A     |      B     |   RESULT   |\n";
+    std::cout << "+------------+------------+------------+\n";
+    for (int j = 0; j < rows; j++) {
+        double a = (typeA=="int") ? (double)d.integers[idxA][j] : d.reals[idxA][j];
+        double b = (typeB=="int") ? (double)d.integers[idxB][j] : d.reals[idxB][j];
+        std::cout << "| " << std::setw(10) << a << " | "
+                          << std::setw(10) << b << " | ";
+        if      (operation=="+")    std::cout << std::setw(10) << a+b;
+        else if (operation=="-")    std::cout << std::setw(10) << a-b;
+        else if (operation=="*")    std::cout << std::setw(10) << a*b;
+        else if (operation=="/")    std::cout << std::setw(10) << (b!=0 ? a/b : 0);
+        else if (operation=="pow")  std::cout << std::setw(10) << mfpow(a, b);
+        else if (operation=="^")    std::cout << std::setw(10) << mfpow(a, b);
+        else if (operation=="sqrt") std::cout << std::setw(10) << msqrt(a);
+        else if (operation=="ln")   std::cout << std::setw(10) << mln(a);
+        else if (operation=="logb") {
+            double base = safeInput<double>("Base for row " + std::to_string(j+1) + ": ");
+            std::cout << std::setw(10) << mlog(a, base);
+        }
+        else if (operation=="nroot") {
+            int n = safeInput<int>("n for row " + std::to_string(j+1) + ": ");
+            std::cout << std::setw(10) << nthroot(a, n);
+        }
+        // integer-only operations — cast back
+        else if (operation=="gcd") {
+            if (typeA!="int"||typeB!="int") { std::cout << "INT ONLY"; }
+            else std::cout << std::setw(10) << mgcd((int)a, (int)b);
+        }
+        else if (operation=="^") {
+            if (typeA!="int"||typeB!="int") { std::cout << "INT ONLY"; }
+            else std::cout << std::setw(10) << mfpow((int)a, (int)b);
+        }
+        else if (operation=="mul2") {
+            if (typeA!="int"||typeB!="int") { std::cout << "INT ONLY"; }
+            else std::cout << std::setw(10) << ((int)a<<(int)b);
+        }
+        else if (operation=="div2") {
+            if (typeA!="int"||typeB!="int") { std::cout << "INT ONLY"; }
+            else std::cout << std::setw(10) << ((int)b>>(int)a);
+        }
+        else if (operation=="find") {
+            if (typeA!="int"||typeB!="int") { std::cout << "INT ONLY"; }
+            else std::cout << std::setw(10) << numfinder((int)a, (int)b);
+        }
+        else if (operation=="ogl") {
+            if (typeA!="int"||typeB!="int") { std::cout << "INT ONLY"; }
+            else std::cout << std::setw(10) << ogl((int)a);
+        }
+        else if (operation=="frac") {
+            int p, q;
+            toFraction(a, p, q);
+        }
+        else { std::cout << "UNKNOWN OP"; }
+
+        std::cout << " |\n";
+    }
+
+    std::cout << "+------------+------------+------------+\n";
+
+    // offer to save result as new column
+    if (yesno("Save results as a new real column? [y/n]: ")) {
+        double **newReals = new double*[d.numReal + 1];
+        for (int i = 0; i < d.numReal; i++) newReals[i] = d.reals[i];
+        newReals[d.numReal] = new double[rows];
+        for (int j = 0; j < rows; j++) {
+            double a = (typeA=="int") ? (double)d.integers[idxA][j] : d.reals[idxA][j];
+            double b = (typeB=="int") ? (double)d.integers[idxB][j] : d.reals[idxB][j];
+            if      (operation=="+")   newReals[d.numReal][j] = a+b;
+            else if (operation=="-")   newReals[d.numReal][j] = a-b;
+            else if (operation=="*")   newReals[d.numReal][j] = a*b;
+            else if (operation=="/")   newReals[d.numReal][j] = (b!=0)?a/b:0;
+            else if (operation=="pow") newReals[d.numReal][j] = mfpow(a, b);
+            else                       newReals[d.numReal][j] = 0;
+        }
+        if (d.numReal > 0) delete[] d.reals; // free old pointer array only
+        d.reals = newReals;
+        d.numReal++;
+        d.rowReal = rows;
+        d.total++;
+        std::cout << "Saved as REAL_" << d.numReal << "\n";
+        std::cout << "Re-running stage 3 with updated data:\n";
+        stage3(d);
+    }
+}
+
+void freeStatData(StatData &d) {
+    for (int i = 0; i < d.numInt;  i++) delete[] d.integers[i];
+    for (int i = 0; i < d.numReal; i++) delete[] d.reals[i];
+    for (int i = 0; i < d.numStr;  i++) delete[] d.strings[i];
+    if (d.numInt  > 0) delete[] d.integers;
+    if (d.numReal > 0) delete[] d.reals;
+    if (d.numStr  > 0) delete[] d.strings;
+}
+
+void statisticscli() {
+    std::cout << "STATISTIC STAGE\n";
+    std::cout << "STAGE 1: Data typing — define your columns and row counts\n";
+    std::cout << "STAGE 2: Data entry — fill in the values\n";
+    std::cout << "STAGE 3: Pretty print — table output\n\n";
+    std::cout << "STAGE 4: Compute across columns operation of choice\n";
+    StatData d = {0};
+    stage1(d);
+    stage2(d);
+    stage3(d);
+    stage4(d);
+    freeStatData(d);
 }
 struct cart2 {
     double x;
@@ -515,167 +671,226 @@ void calcmidpoint(double x1, double y1, double x2, double y2, double &xmid, doub
 }*/
 
 double xcoef[20];
-//might change to a more dynamic approach
 void coeficientruler(std::string f, double *xcoef, double x1, double y1){
-    int j=1;
-    for (int i=1; i<=20; i++){
-        if(f.at(i)-'0'>=0&&f.at(i)-'0'<=9){
-            xcoef[++j]=(double)f.at(i);
+    int degree = 0;
+    // parse space-separated coefficients from string
+    // e.g. "3 2 1" -> xcoef[0]=3, xcoef[1]=2, xcoef[2]=1
+    int i = 0;
+    int len = f.length();
+    while (i < len && degree < 20) {
+        // skip spaces
+        while (i < len && f.at(i) == ' ') i++;
+        if (i >= len) break;
+        // read sign
+        double sign = 1.0;
+        if (f.at(i) == '-') { sign = -1.0; i++; }
+        else if (f.at(i) == '+') { i++; }
+        // read digits including decimal
+        std::string numstr = "";
+        while (i < len && (f.at(i)-'0'>=0 && f.at(i)-'0'<=9 || f.at(i)=='.')) {
+            numstr += f.at(i);
+            i++;
         }
-        else continue;
-    }
-    int res=0;
-    for(int k=j; k>=1; k--){
-        if(xcoef[k]!=0){
-            res+=xcoef[k]*mpow(x1, j);
+        if (!numstr.empty()) {
+            // manual string to double
+            double val=0, d=1;
+            bool afterdot = false;
+            for (char c : numstr) {
+                if (c == '.') { afterdot = true; continue; }
+                if (!afterdot) val = val*10 + (c-'0');
+                else { d *= 10; val += (c-'0')/d; }
+            }
+            xcoef[degree++] = sign * val;
         }
-        else continue;
     }
-    if (res==y1) {
-        std::cout << "Point belongs to function f(x) = " << f << "\n";
+    // evaluate polynomial at x1
+    // xcoef[0] is highest degree coefficient
+    double res = 0;
+    for (int k = 0; k < degree; k++) {
+        res += xcoef[k] * mpow(x1, degree-1-k);
     }
-    else std::cout << "Point doesnt belongs to function f(x) = " << f << "\n";
+    std::cout << "f(x) = ";
+    for (int k = 0; k < degree; k++) {
+        int power = degree-1-k;
+        if (xcoef[k] == 0) continue;
+        if (k > 0 && xcoef[k] > 0) std::cout << "+";
+        std::cout << xcoef[k];
+        if (power > 1) std::cout << "x^" << power;
+        else if (power == 1) std::cout << "x";
+    }
+    std::cout << "\n";
+
+    std::cout << "f(" << x1 << ") = " << res << "\n";
+
+    if (res == y1)
+        std::cout << "Point (" << x1 << ", " << y1 << ") belongs to f(x)\n";
+    else
+        std::cout << "Point (" << x1 << ", " << y1 << ") does NOT belong to f(x)\n" << "Closest y value at x=" << x1 << " is " << res << "\n";
 }
 
 void calcdim2(cart2 *cartlist){
-    std::cout << "Enter shape to work with" << '\n';
-    std::string shape;
-    std::cin >> shape;
+    std::string shape = safeInput<std::string>("Enter shape to work with [triangle/square/hexagon/circle/cartezian]: ");
     if (shape=="triangle"){
-        std::cout << "Select type [echilateral/isoceles/any]:\n";
-        std::string type;
-        std::cin >> type;
+        std::string type = safeInput<std::string>("Select type [echilateral/isoceles/any]: ");
         double l1, l2, l3;
-        double a1, a2, a3; 
+        double a1, a2, a3;
         if (type=="echilateral"){
-            std::cout << "Enter a length:\n";
-            std::cin >> l1;
+            l1 = safeInput<double>("Enter side length: ");
             std::cout << "All angles are OBVIOUSLY 60 degrees\n";
             std::cout << "All heights are " << l1*msqrt(3)/2 << "\n";
-            std::cout << "";
+            std::cout << "Area: " << (msqrt(3)/4)*l1*l1 << "\n";
+            std::cout << "Perimeter: " << l1*3 << "\n";
         }
         else if(type=="isoceles"){
-
+            l1 = safeInput<double>("Enter the repeated side length: ");
+            l2 = safeInput<double>("Enter the base length: ");
+            double h = msqrt(l1*l1 - (l2/2)*(l2/2));
+            std::cout << "Height: " << h << "\n";
+            std::cout << "Area: " << (l2*h)/2 << "\n";
+            std::cout << "Perimeter: " << l1*2+l2 << "\n";
         }
         else if(type=="any"){
-            std::cout << "Select what to give [2l1a/1l2a/3l]:\n";
-            std::string sol;
-            std::cin >> sol;
-            std::cout << "First will check if triangle you yapping is valid or if it isnt, trust issues of the user\n";
-            if(sol=="2l1a"){
-                std::cout << "Anyway, enter the 2 sides and the angle [between/next to] them\n";
-                std::cin >> l1 >> l2;
-                std::cout << "Is the angle next to or between the sides?\n";
-                std::string chois;
-                std::cin >> chois;
-                std::cout << "Enter the Angle:\n";
-                if(chois=="next to"){
-                    std::cin >> a2;
+            std::string sol = safeInput<std::string>("Select what to give [2l1a/1l2a/3l]: ");
+            std::cout << "First will check if triangle you yapping is valid\n";
+            if(sol=="3l"){
+                l1 = safeInput<double>("Enter side 1: ");
+                l2 = safeInput<double>("Enter side 2: ");
+                l3 = safeInput<double>("Enter side 3: ");
+                // triangle inequality
+                if(l1+l2<=l3 || l1+l3<=l2 || l2+l3<=l1){
+                    std::cout << "Invalid triangle — sides violate triangle inequality\n";
+                    return;
+                }
+                // Heron's formula
+                double s = (l1+l2+l3)/2;
+                double area = msqrt(s*(s-l1)*(s-l2)*(s-l3));
+                std::cout << "Valid triangle\n";
+                std::cout << "Perimeter: " << l1+l2+l3 << "\n";
+                std::cout << "Area (Heron): " << area << "\n";
+            }
+            else if(sol=="2l1a"){
+                l1 = safeInput<double>("Enter side 1: ");
+                l2 = safeInput<double>("Enter side 2: ");
+                std::string chois = safeInput<std::string>("Is the angle [between] the sides or [next] to side 1: ");
+                if(chois=="between"){
+                    a1 = safeInput<double>("Enter angle between them (degrees): ");
+                    // law of cosines: l3^2 = l1^2 + l2^2 - 2*l1*l2*cos(a1)
+                    // need cos — approximate via Taylor for now or note limitation
+                    std::cout << "NOTE: trig not yet implemented, cant resolve third side without cos\n";
+                    std::cout << "Area: " << 0.5*l1*l2 << " * sin(angle) — trig pending\n";
                 }
                 else {
-                    std::cin >> a1;
-                    
+                    a2 = safeInput<double>("Enter angle next to side 1 (degrees): ");
+                    std::cout << "NOTE: trig not yet implemented\n";
                 }
+            }
+            else if(sol=="1l2a"){
+                l1 = safeInput<double>("Enter the known side: ");
+                a1 = safeInput<double>("Enter angle opposite to it (degrees): ");
+                a2 = safeInput<double>("Enter a second angle (degrees): ");
+                a3 = 180 - a1 - a2;
+                if(a3 <= 0){
+                    std::cout << "Invalid — angles dont sum to 180\n";
+                    return;
+                }
+                std::cout << "Third angle: " << a3 << " degrees\n";
+                std::cout << "NOTE: remaining sides need sin — trig pending\n";
             }
         }
     }
     else if (shape=="square"){
-        double l;
-        std::cout << "Enter length of one side" << "\n";
-        std::cin >> l;
-        std::cout << "DIAGONAL1: " << l*msqrt(2) << "\n";
-        std::cout << "AREA: " << l*l << "\n";
-        std::cout << "ANGLE BETWEEN EACH SIDE IS 90 degrees" << "\n";
-        std::cout << "ANGLE BETWEEN ANY SIDE AND DIAGONAL IS 45 degrees" << "\n";
-        double hl=l*l+l*l/4;
-        std::cout << "HALF DISTANCE: " << msqrt(hl) << "\n";
-        std::cout << "2 HALF DISTANCES FORM AN isoceles triangle" << "\n";
-        std::cout << "VOLUME: DOESNT EXIST" << "\n";
-        std::cout << "SURFACE AREA: DOESNT EXIST" << "\n";
-        std::cout << "The easiest shape of all I forgot why i added this" << "\n";
+        double l = safeInput<double>("Enter length of one side: ");
+        std::cout << "DIAGONAL: "     << l*msqrt(2) << "\n";
+        std::cout << "AREA: "         << l*l << "\n";
+        std::cout << "PERIMETER: "    << l*4 << "\n";
+        std::cout << "HALF DISTANCE: "<< msqrt(l*l+l*l/4) << "\n";
+        std::cout << "All angles 90 degrees, diagonal splits into 45 degrees\n";
     }
     else if (shape=="hexagon"){
-        double l;
-        std::cout << "Enter lenght of one side" << "\n";
-        std::cin >> l;
-        std::cout << "DIAGONAL NUMBERS: " << 1/2*6*(6-3) << "\n";
-        std::cout << "DIAGONAL1: " << l*2 << "\n";
-        std::cout << "DIAGONAL2: " << l*msqrt(3) << "\n";
-        std::cout << "AREA: " << (3*msqrt(3)/2)*l*l << "\n";
-        std::cout << "ANGLE BETWEEN EACH SIDE IS 120 degrees" << "\n";
-        std::cout << "ANGLE BETWEEN A SIDE AND DIAGONAL1 IS 60 degrees" << "\n";
-        std::cout << "ANGLE BETWEEN A SIDE AND DIAGONAL2 IS 30 degrees" << "\n";
-        double hl=l*l*4+l*l/4;
-        std::cout << "HALF DISTANCE: " << msqrt(hl) << "\n";
-        std::cout << "2 HALF DISTANCES FORM AN isoceles triangle" << "\n";
-        std::cout << "VOLUME: DOESNT EXIST" << "\n";
-        std::cout << "SURFACE AREA: DOESNT EXIST" << "\n";
-        std::cout << "Difficulty:Medium" << "\n";
+        double l = safeInput<double>("Enter length of one side: ");
+        std::cout << "DIAGONAL COUNT: " << 9 << "\n"; // fixed: 1/2*6*(6-3) is integer division = 0
+        std::cout << "LONG DIAGONAL: "  << l*2 << "\n";
+        std::cout << "SHORT DIAGONAL: " << l*msqrt(3) << "\n";
+        std::cout << "AREA: "           << (3*msqrt(3)/2)*l*l << "\n";
+        std::cout << "PERIMETER: "      << l*6 << "\n";
+        std::cout << "Interior angle: 120 degrees\n";
     }
     else if (shape=="circle"){
-        double radius;
-        std::cout << "Enter Radius length" << "\n";
-        std::cin>>radius;
-        std::cout<< "AREA: " << circlearea(radius) << "\n";
-        std::cout<< "Barely anything else to calculate so here is a short lesson about them" << "\n";
-        std::cout << "DEF: A circle just means we take all points away from a certain distance at the center called radius\n";
-        std::cout << "The equation of a circle is x squared + y squared = radius length\n";
-        std::cout << "The circle can cointain the cubic roots of 1/-1 in which case we do trigonometry. They all contain these\n";
-        std::cout << "We define sine as the x coordinate of a point in the circle and cosine as the y coordinate of a point in a circle\n";
-        std::cout << "Done.\n";
+        double radius = safeInput<double>("Enter radius length: ");
+        std::cout << "AREA: "          << circlearea(radius) << "\n";
+        std::cout << "CIRCUMFERENCE: " << 2*pi*radius << "\n";
+        std::cout << "DIAMETER: "      << 2*radius << "\n";
+        std::cout << "\nDEF: A circle is all points equidistant from a center, that distance being the radius\n";
+        std::cout << "Equation: x^2 + y^2 = r^2\n";
+        std::cout << "Sine is the y coordinate, cosine the x coordinate of a point on the unit circle\n";
     }
     else if (shape=="cartezian"){
-        std::cout << "Enter number of points to work with" << '\n';
-        int a;
-        std::cin >> a;
-        double k, j;
-        std::cout << "WARNING: max points stored go up to 10000, the limit is the one of double" << '\n';
+        int a = safeInput<int>("Enter number of points (max 10000): ");
+        if(a <= 0 || a > 10000){
+            std::cout << "Invalid number of points\n";
+            return;
+        }
         for(int i=1; i<=a; i++){
-            std::cout << "Enter coordinates for point number " << i << " out of " << a << "\n";
-            std::cin >> cartlist[i].x >> cartlist[i].y;
+            std::cout << "Point " << i << " of " << a << " — ";
+            cartlist[i].x = safeInput<double>("x: ");
+            cartlist[i].y = safeInput<double>("y: ");
         }
-        std::cout << "What to do?" << '\n';
-        std::cout << "[1] calculate multidistance (distance between all points) and output in pretty format" << '\n';
-        std::cout << "[2] calculate certain distance " << '\n';
-        std::cout << "[3] calculate middle points between consecutive/input distances" << '\n';
-        std::cout << "[4] calculate slope or make/insert function" << '\n'; // insert as in to find out which points correspond to that equation and correspondence x and y
-        int task;
-        std::cin >> task;
-        if(task==1){ 
-
-        }
-        else if(task==3){
-            double v[10000][2];
-            std::cout << "For input/points at your choice press 1, for consecutive of all press 2" << '\n';
-            int b;
-            std::cin >> b;
-            if (b==2){
-                for(int i=0; i<a; i++){
-                    calcmidpoint(cartlist[i].x, cartlist[i].y, cartlist[i+1].x, cartlist[i+1].y, v[i][0], v[i][1]);
-                    std::cout << v[i][0] << " " << v[i][1] << "\n";
+        std::cout << "\n[1] Multidistance between all points\n";
+        std::cout << "[2] Distance between two specific points\n";
+        std::cout << "[3] Midpoints between consecutive or chosen points\n";
+        std::cout << "[4] Slope or function insertion\n";
+        int task = safeInput<int>("Choose task: ");
+        
+        if(task==1){
+            // all pairs
+            for(int i=1; i<=a; i++){
+                for(int j=i+1; j<=a; j++){
+                    double dx = cartlist[j].x - cartlist[i].x;
+                    double dy = cartlist[j].y - cartlist[i].y;
+                    std::cout << "d(P" << i << ",P" << j << ") = " << msqrt(dx*dx+dy*dy) << "\n";
                 }
             }
-            else {
-                std::cout << "Enter indeces of the points to calculate" << "\n";
-                int k, i;
-                std::cin >> i >> k;
-                calcmidpoint(cartlist[i].x, cartlist[i].y, cartlist[k].x, cartlist[k].y, v[k][0], v[k][1]);
-                std::cout << v[k][0] << " " << v[k][1] << "\n";
-        }
         }
         else if(task==2){
-
+            int i = safeInput<int>("Index of point 1: ");
+            int j = safeInput<int>("Index of point 2: ");
+            if(i<1||i>a||j<1||j>a){
+                std::cout << "Invalid indices\n"; return;
+            }
+            double dx = cartlist[j].x - cartlist[i].x;
+            double dy = cartlist[j].y - cartlist[i].y;
+            std::cout << "Distance: " << msqrt(dx*dx+dy*dy) << "\n";
         }
-        else {
-            std::cout << "f(x)=";
-            std::string function;
-            std::cin >> function;
-            std::cout << "This mode supports functions of up to x to the 5th/quintic polynomials\n";
-            std::cout << "It is advised to put the function in order for a good calculation\n";
-            
+        else if(task==3){
+            int mode = safeInput<int>("Consecutive of all [2] or chosen pair [1]: ");
+            double v[10000][2];
+            if(mode==2){
+                for(int i=1; i<a; i++){
+                    calcmidpoint(cartlist[i].x, cartlist[i].y, cartlist[i+1].x, cartlist[i+1].y, v[i][0], v[i][1]);
+                    std::cout << "Mid(P" << i << ",P" << i+1 << ") = " << v[i][0] << " " << v[i][1] << "\n";
+                }
+            }
+            else{
+                int i = safeInput<int>("Index of point 1: ");
+                int k = safeInput<int>("Index of point 2: ");
+                if(i<1||i>a||k<1||k>a){
+                    std::cout << "Invalid indices\n"; return;
+                }
+                calcmidpoint(cartlist[i].x, cartlist[i].y, cartlist[k].x, cartlist[k].y, v[0][0], v[0][1]);
+                std::cout << "Midpoint: " << v[0][0] << " " << v[0][1] << "\n";
+            }
+        }
+        else if(task==4){
+            std::string function = safeInput<std::string>("f(x) = ");
+            std::cout << "Supports up to quintic polynomials\n";
+            std::cout << "It is advised to input in order for accurate calculation\n";
         }
     }
+    else {
+        std::cout << "Unknown shape\n";
+    }
 }
+
 void geometrycli(){
     std::cout << "GEOMETRY CALCULATOR" << "\n";
     std::cout << "This mode isnt responsible for any simulation of the provided shapes" << "\n";
@@ -683,8 +898,7 @@ void geometrycli(){
     std::cout << "             [2] cartezian/euclidean geometry 3D calculation" << "\n";
     std::cout << "             [3] trigonometric values" << "\n";
     std::cout << "             [4] calculus" << "\n";
-    int choice;
-    std::cin >> choice;
+    int choice=safeInput<int>("Choice number int value: ");
     if(choice==1){
         cart2 cartlist[10000];
         calcdim2(cartlist);
@@ -783,11 +997,11 @@ void masscli(int *cnr){
     std::cout << "--------------------------------------------------------END OF WARNING--------------------------------------------------" << "\n";
     std::string a, b, operation;
     while (true){
-    std::cout << "CALC: ";
-    std::cin >> operation;
+    operation=safeInput<std::string>("CALC: ");
     if (operation=="exit") return;
     else {
-        std::cin >> a >> b;
+        a=safeInput<std::string>("Vector 1: ");
+        b=safeInput<std::string>("Vector 2: ");
         int la=a.length(), lb=b.length(), ma;
         int anr[a.length()], bnr[b.length()];
         std::string c="";
@@ -802,9 +1016,7 @@ void masscli(int *cnr){
 void financialcli(){
     std::cout << "The Ultra Pro Corporatist Calculator made with good intentions" << "\n";
     std::cout << "Educational purposes: you will be prompted with questions for a more accurate calculation" << "\n";
-    std::cout << "FINANCE CALC: ";
-    std::string operation;
-    std::cin >> operation;
+    std::string operation=safeInput<std::string>("FINANCE CALC: ");
     FinaOperationIdentifier(operation);
 }
 
@@ -889,9 +1101,7 @@ void help(){
 
 void massconverter(){
     std::cout << "The mass converter is supposed to convert certain units" << "\n";
-    std::cout << "Choose measure to convert: Volume, Mass, Distance, Surface, Speed, Digital Info Storage [dig], Density, Inch-to-Cm, Feet-to-m" << "\n";
-    std::string converter;
-    std::cin >> converter;
+    std::string converter=safeInput<std::string>( "Choose measure to convert: Volume, Mass, Distance, Surface, Speed, Digital Info Storage [dig], Density, Inch-to-Cm, Feet-to-m: ");
 }
 
 int main(int argc, char *argv[]){
@@ -921,6 +1131,9 @@ int main(int argc, char *argv[]){
     }
     else if (mode=="geometry"){
         geometrycli();
+    }
+    else if (mode=="statistics"){
+        statisticscli();    
     }
     else {
         if(argc < 5 ){
