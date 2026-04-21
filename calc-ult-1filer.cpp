@@ -3,11 +3,24 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-//declaration of algebraic functions and needed constants
-// Might stop at version 1.5 as i see the extend is getting rather too diverse
+/*---VARIABLES---*/
+//to be transported in another file
+
+struct cart2 {
+    double x, y;
+} cartlist[10001];
+struct StatData {
+    int numInt, numReal, numStr;
+    int rowInt, rowReal, rowStr;
+    int total;
+    int **integers;
+    double **reals;
+    std::string **strings;
+};
 const double e=2.71828182845904523536;
 const double pi=3.14159265358979323846;
 const double ln2=0.6931471805599453;
+/*Functions*/
 //safe input template made for more security hardening, useful for a future patch, probably 1.3.5, very similar to Python
 template <typename T>
 T safeInput(const std::string &prompt) {
@@ -21,6 +34,15 @@ T safeInput(const std::string &prompt) {
     }
 }
 //below are operation algorithms -> will think of which to add for extension
+int abs(int a) {
+    int mask = a >> 31;       // all 0s if positive, all 1s (0xFFFFFFFF) if negative, more efficient shifting for int
+    return (a + mask) ^ mask;
+}
+
+double dabs(double a) {
+    return (a < 0) ? -a : a;
+}
+
 int mgcd (int a, int b){
     int c=a, d=b;
     while(d != 0)
@@ -188,10 +210,76 @@ int vectorcomparison(int la, int lb, int *anr, int *bnr){
         else return ivectorcomparison(shortcut, anr, bnr);
     }
 }
+
+long long factorial(int n) {
+    long long fn = 1;
+    while (n > 1) {
+        fn *= n;
+        n--;
+    }
+    return fn;
+}
+
+double sine(double a){
+    //using the Taylor series
+    int texp=3;
+    double rez=a;
+    long long f;
+    int sign=-1;
+    while(texp!=1001){
+        rez+=sign*mfpow(a, texp)/factorial(texp);
+        sign*=-1;
+        texp+=2;
+    }
+    return rez;
+}
+
+double cosine(double a){
+    //using the Taylor series
+    int texp=2;
+    double rez=1.0;
+    long long f;
+    int sign=-1;
+    while(texp!=1001){
+        rez+=sign*mfpow(a, texp)/factorial(texp);
+        sign*=-1;
+        texp+=2;
+    }
+    return rez;
+}
+
+double tangent(double a){
+    double s=sine(a), c=cosine(a);
+    if (dabs(s) < 1e-12 && dabs(c) < 1e-12){
+        return -1;
+    }
+    return s / c;
+}
+
+double cotangent(double a) {
+    double s = sine(a);
+    if (dabs(s) < 1e-12)
+        return -1;
+    return cosine(a) / s;
+}
+
+double secant(double a) {
+    double c = cosine(a);
+    if (dabs(c) < 1e-12)
+        return -1;
+    return 1.0 / c;
+}
+
+double cosecant(double a) {
+    double s = sine(a);
+    if (dabs(s) < 1e-12)
+        return  -1;
+    return 1.0 / s;
+}
 // P.S: AI wasnt used to any extend besides maths advice and minor debugging
 // dodging case switch for now as ill add in a new version
-// Geometry functions below
-//althogh redundant might need noting
+// handling functions below
+// althogh redundant might need noting
 
 double circlearea(double a){
     return pi*a*a;
@@ -270,6 +358,24 @@ void OperationIdentifier(int a, int b, std::string operation){
     }
     if (operation=="sqrt"){
         std::cout << msqrt(a) << " " << msqrt(b) << "\n";
+    }
+    if (operation=="sin"){
+        std::cout << sine(a) << " " << sine(b) << "\n";
+    }
+    if (operation=="cos"){
+        std::cout << cosine(a) << " " << cosine(b) << "\n";
+    }
+        if (operation=="tan" || operation=="tg"){
+        std::cout << tangent(a) << " " << tangent(b) << "\n";
+    }
+        if (operation=="sec"){
+        std::cout << secant(a) << " " << secant(b) << "\n";
+    }
+        if (operation=="csc"){
+        std::cout << cosecant(a) << " " << cosecant(b) << "\n";
+    }
+        if (operation=="ctg" || operation=="cotan"){
+        std::cout << cotangent(a) << " " << cotangent(b) << "\n";
     }
 }
 
@@ -362,15 +468,7 @@ void mastercli(){
     }
 }
 //Smart Statistics funtions remade from scratc
-//Container replacing multi parser
-struct StatData {
-    int numInt, numReal, numStr;
-    int rowInt, rowReal, rowStr;
-    int total;
-    int **integers;
-    double **reals;
-    std::string **strings;
-};
+//Container replacing multi parse
 
 bool yesno(const std::string &prompt) {
     std::string ans = safeInput<std::string>(prompt);
@@ -655,20 +753,11 @@ void statisticscli() {
     stage4(d);
     freeStatData(d);
 }
-struct cart2 {
-    double x;
-    double y;
-} cartlist[10001];
 
 void calcmidpoint(double x1, double y1, double x2, double y2, double &xmid, double &ymid){
     ymid=(y1+y2)/2;
     xmid=(x1+x2)/2;
 }
-
-/*void calcalldist(double x1, double y1, double x2, double y2, double &disx, double &disy){
-    disx=
-    disy=
-}*/
 
 double xcoef[20];
 void coeficientruler(std::string f, double *xcoef, double x1, double y1){
@@ -695,7 +784,7 @@ void coeficientruler(std::string f, double *xcoef, double x1, double y1){
             // manual string to double
             double val=0, d=1;
             bool afterdot = false;
-            for (char c : numstr) {
+            for (char c:numstr) {
                 if (c == '.') { afterdot = true; continue; }
                 if (!afterdot) val = val*10 + (c-'0');
                 else { d *= 10; val += (c-'0')/d; }
@@ -1090,7 +1179,8 @@ void help(){
 
     std::cout << "-- CONSTANTS USED INTERNALLY --\n";
     std::cout << "  e  = 2.71828182845904523536\n";
-    std::cout << "  pi = 3.14159265358979323846\n\n";
+    std::cout << "  pi = 3.14159265358979323846\n";
+    std::cout << " ln2 = 0.6931471805599453\n\n";
 
     std::cout << "============================================================\n";
     std::cout << "  Version note: geometry 3D, trig, and calculus are stubs.\n";
