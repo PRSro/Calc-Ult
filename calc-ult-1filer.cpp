@@ -301,7 +301,7 @@ void simpledebt(double a, double b, double r){
 void complexdebt(double a, double b, double r){
     std::cout << "TOTAL INTEREST: " << a*mpow(1+r/100, b)-a << "\n";
     for (int i=1; i<=b; i++){
-        std::cout << "YEAR " << i << " INTEREST IS " << a * mpow(1+r/100, i)-a * mpow(1+r/100, i-1) << "\n";
+        std::cout << "YEAR " << i << " INTEREST IS " << (a-1) * mpow(1+r/100, i) * mpow(1+r/100, i-1) << "\n";
     }
 }
 // as of V1.2.0 all work
@@ -365,18 +365,19 @@ void OperationIdentifier(int a, int b, std::string operation){
     if (operation=="cos"){
         std::cout << cosine(a) << " " << cosine(b) << "\n";
     }
-        if (operation=="tan" || operation=="tg"){
+    if (operation=="tan" || operation=="tg"){
         std::cout << tangent(a) << " " << tangent(b) << "\n";
     }
-        if (operation=="sec"){
+    if (operation=="sec"){
         std::cout << secant(a) << " " << secant(b) << "\n";
     }
-        if (operation=="csc"){
+    if (operation=="csc"){
         std::cout << cosecant(a) << " " << cosecant(b) << "\n";
     }
-        if (operation=="ctg" || operation=="cotan"){
+    if (operation=="ctg" || operation=="cotan"){
         std::cout << cotangent(a) << " " << cotangent(b) << "\n";
     }
+
 }
 
 void FinaOperationIdentifier(std::string operation){
@@ -929,7 +930,6 @@ void calcdim2(cart2 *cartlist){
         std::cout << "[3] Midpoints between consecutive or chosen points\n";
         std::cout << "[4] Slope or function insertion\n";
         int task = safeInput<int>("Choose task: ");
-        
         if(task==1){
             // all pairs
             for(int i=1; i<=a; i++){
@@ -999,7 +999,7 @@ void geometrycli(){
         // trigarith, to be coded soon
     }   
     else {
-         // calculuscli(); //only outputs rules as i didnt learn calculus
+         // calculuscli(); //only outputs rules as i didnt learn much calculus
     }             
 }
 
@@ -1061,7 +1061,6 @@ void ArithmeticIdentifier(int *anr, int *bnr, int *cnr, int la, int lb, std::str
             cnr[0]=-1; //negative
         }
     }
-
 }
 
 void ArrayTostring(std::string &c, int *cnr, int ma){
@@ -1186,7 +1185,7 @@ void help(){
     std::cout << "  Version note: geometry 3D, trig, and calculus are stubs.\n";
     std::cout << "  Mass mode supports + and - only as of current version.\n";
     std::cout << "============================================================\n";
-    std::cout << "-- OTHER FEATURES PLANNED: log/ln, mpow for decimal, debranching to a microservice version, bug fixes, functionality fix";
+    std::cout << "-- OTHER FEATURES PLANNED: base converter, geometry completions";
 }
 
 void massconverter(){
@@ -1194,12 +1193,285 @@ void massconverter(){
     std::string converter=safeInput<std::string>( "Choose measure to convert: Volume, Mass, Distance, Surface, Speed, Digital Info Storage [dig], Density, Inch-to-Cm, Feet-to-m: ");
 }
 
-int main(int argc, char *argv[]){
-    std::string mode=argv[1];
-    if(argc < 2 && mode != "static"){
-        help();
-        return 1;
+const char padding='0';
+const std::string hexalphabet="0123456789abcdef";
+
+void split(const std::string &a, std::string &c) {
+    std::string seq;
+    int s=a.length();
+    c="";
+    if (s%2==1) {
+        seq= {padding, a.at(0)};
+        c+=seq+' ';
+        for(int i=1; i<s; i+=2) {
+            seq= {a.at(i), a.at(i+1)};
+            c+=seq+' ';
+        }
     }
+    else {
+        for(int i=0; i<s; i+=2) {
+            seq= {a.at(i), a.at(i+1)};
+            c+=seq+' ';
+        }
+    }
+}
+
+void parser(const std::string &a, std::string &final) {
+    for(char l:a) {
+        if (l==' ') {
+            continue;
+        }
+        else final+=l;
+    }
+}
+
+void reverser(const std::string &a, std::string &c) {
+    int n=a.length();
+    std::string seq;
+    for (int y=n-1; y>=0; y--) {
+        seq=a.at(y);
+        c+=seq;
+    }
+}
+
+int deconvert_pair(const std::string &pair) {
+    int h = hexalphabet.find(pair.at(0));
+    int l  = hexalphabet.find(pair.at(1));
+    return h * 16 + l;
+}
+
+void base16_deconvert(const std::string &a, long long &b) {
+    if(a=="0") {
+        b=0;
+        return;
+    }
+    bool negative = (a.at(0) == '-');
+    std::string temp=negative?a.substr(1):a, clean, c;
+    split(temp,c);
+    parser(c, clean);
+    b=0;
+    int la=clean.length();
+    for(int i=0; i<la; i+=2) {
+        std::string pair= {clean.at(i), clean.at(i+1)};
+        b=b*256+deconvert_pair(pair);
+    }
+    if(negative)b*=-1;
+}
+
+void base16_convert(long long b, std::string &final) {
+    final="";
+    if (b==0) {
+        final="0";
+        return;
+    }
+    long long d=std::abs(b);
+    while(d!=0) {
+        int r=d%16;
+        final+=hexalphabet.at(r);
+        d/=16;
+    }
+    std::string temp;
+    reverser(final, temp);
+    final=temp;
+    if(b<0) final.insert(0, "-");
+}
+
+void raw_bytes_print(const std::string &a) {
+    for (char c : a)
+        std::cout << (int)(unsigned char)c << ' ';
+}
+
+void suggestions() {
+    std::cout << "THE OBSCURON's PERSONAL HEX LIBRARY IN CPP FOR SPEED AND EFFICIENCY\n";
+    std::cout << "═══════════════════════════════════════════════════════════════════════════════\n";
+    std::cout << "│        function      │             intent              │        params       │\n";
+    std::cout << "───────────────────────────────────────────────────────────────────────────────\n";
+    std::cout << "│ split                │ chunk string into hex pairs     │ (str, &out)         │\n";
+    std::cout << "│ parser               │ strip spaces from hex string    │ (str, &out)         │\n";
+    std::cout << "│ reverser             │ reverse a string                │ (str, &out)         │\n";
+    std::cout << "│ deconvert_pair       │ hex pair to byte value          │ (str) → int         │\n";
+    std::cout << "│ base16_convert       │ number to hex string            │ (long long, &out)   │\n";
+    std::cout << "│ base16_deconvert     │ hex string to number            │ (str, &out)         │\n";
+    std::cout << "│ raw_bytes_print      │ print raw byte values           │ (str)               │\n";
+    std::cout << "│ load_ciphertext      │ load+normalize hex input        │ (&out)              │\n";
+    std::cout << "│ print_ciphertext     │ display hex in spaced pairs     │ (str)               │\n";
+    std::cout << "│ hex_xor              │ XOR hex string against key      │ (str, key, &out)    │\n";
+    std::cout << "│ large_hex_encrypt    │ encrypt string to hex           │ (str, &out)         │\n";
+    std::cout << "│ large_hex_decrypt    │ decrypt hex to string           │ (str, &out)         │\n";
+    std::cout << "│ hex_operators        │ command dispatcher              │ (char)              │\n";
+    std::cout << "│ suggestions          │ print this help table           │ none                │\n";
+    std::cout << "═══════════════════════════════════════════════════════════════════════════════\n";
+}
+
+void large_hex_encrypt(const std::string &a, std::string &out) {
+    std::string temp=a;
+    for (char ch : temp) {
+        std::string part;
+        base16_convert((long long)(unsigned char)ch, part);
+        out += part + ' ';
+    }
+}
+
+void large_hex_decrypt(const std::string &a, std::string &out) {
+    std::string clean;
+    parser(a, clean);
+    int n=clean.length();
+    for (int i = 0; i < n; i += 2) {
+        std::string pair = { clean.at(i), clean.at(i+1) };
+        out += (char)deconvert_pair(pair);
+    }
+}
+
+void hex_xor(const std::string &a, unsigned char key, std::string &out) {
+    std::string clean;
+    if (a.find(' ') != std::string::npos) {
+        parser(a, clean);
+    } else {
+        std::string paired;
+        split(a, paired);
+        parser(paired, clean);
+    }
+    int m=clean.length();
+    for (int i = 0; i < m; i += 2) {
+        std::string pair = { clean.at(i), clean.at(i+1) };
+        unsigned char byte = (unsigned char)deconvert_pair(pair);
+        byte ^= key;
+        std::string part;
+        base16_convert((long long)byte, part);
+        if (part.length() == 1) part = "0" + part;
+        out += part + ' ';
+    }
+}
+
+void hex_xor_bruteforce(const std::string &a) {
+    const std::string common = "etaoinshrdlu ";
+
+    int best_key = 0;
+    int best_score = -1;
+    std::string best_result;
+
+    for (int key = 0; key < 256; key++) {
+        std::string candidate;
+        hex_xor(a, (unsigned char)key, candidate);
+
+        // decrypt candidate back to string
+        std::string decoded;
+        large_hex_decrypt(candidate, decoded);
+
+        // score by common english characters
+        int score = 0;
+        for (char c : decoded)
+            if (common.find((char)tolower(c)) != std::string::npos)
+                score++;
+
+        // print all candidates so user can inspect
+        std::cout << "key=0x" << std::hex << std::setw(2) << std::setfill('0') << key
+        << std::dec << " score=" << std::setw(3) << score
+        << " | " << decoded << '\n';
+
+        if (score > best_score) {
+            best_score = score;
+            best_key   = key;
+            best_result = decoded;
+        }
+    }
+
+    std::cout << "\n══════════════════════════════════\n";
+    std::cout << "  BEST CANDIDATE\n";
+    std::cout << "══════════════════════════════════\n";
+    std::cout << "  key:    0x" << std::hex << std::setw(2)
+    << std::setfill('0') << best_key << std::dec << " (" << best_key << ")\n";
+    std::cout << "  score:  " << best_score << "\n";
+    std::cout << "  result: " << best_result << "\n";
+    std::cout << "  bytes:  ";
+    raw_bytes_print(best_result);
+    std::cout << "\n══════════════════════════════════\n";
+}
+
+void hex_operators(char a) {
+    switch(a) {
+        case 'e': {
+            long long num = safeInput<long long>("Enter number: ");
+            std::string result;
+            base16_convert(num, result);
+            std::cout << "hex: " << result << '\n';
+            break;
+        }
+        case 'd': {
+            std::string hex = safeInput<std::string>("Enter hex: ");
+            long long result;
+            base16_deconvert(hex, result);
+            std::cout << "decimal: " << result << '\n';
+            break;
+        }
+        case 'x': {
+            std::string hex = safeInput<std::string>("Enter hex string: ");
+            int key = safeInput<int>("Enter key (0-255): ");
+            std::string result;
+            hex_xor(hex, (unsigned char)key, result);
+            std::cout << "xored: " << result << '\n';
+            break;
+        }
+        case 'b': {
+            std::string input = safeInput<std::string>("Enter string to encrypt: ");
+            std::string result;
+            large_hex_encrypt(input, result);
+            std::cout << "encrypted: " << result << '\n';
+            break;
+        }
+        case 'r': {
+            std::string input = safeInput<std::string>("Enter hex to decrypt: ");
+            std::string result;
+            large_hex_decrypt(input, result);
+            std::cout << "decrypted: " << result << '\n';
+            break;
+        }
+        case 'w': {
+            // raw bytes print
+            std::string input = safeInput<std::string>("Enter string for raw bytes: ");
+            std::cout << "bytes: ";
+            raw_bytes_print(input);
+            std::cout << '\n';
+            break;
+        }
+        case 'p': {
+            // print ciphertext in spaced pairs
+            std::string input = safeInput<std::string>("Enter hex to display: ");
+            std::string paired;
+            split(input, paired);
+            std::cout << "paired: " << paired << '\n';
+            break;
+        }
+        case 'l': {
+            // load and normalize ciphertext
+            std::string raw = safeInput<std::string>("Enter ciphertext (spaced or not): ");
+            std::string paired, clean;
+            split(raw, paired);
+            parser(paired, clean);
+            std::cout << "normalized: " << clean << '\n';
+            std::cout << "paired:     " << paired << '\n';
+            break;
+        }
+        case 'f': {
+            // // brute force XOR
+            std::string hex = safeInput<std::string>("Enter hex ciphertext: ");
+            hex_xor_bruteforce(hex);
+            break;
+        }
+        case 'q': {
+            std::cout << "exiting hex mode\n";
+            break;
+        }
+        default: {
+            suggestions();
+            break;
+        }
+    }
+}
+
+int main(int argc, char *argv[]){
+    if (argc < 2) { help(); return 1; }
+    std::string mode=argv[1];
     if(mode=="interactive"){
         interactivecli();
     }
@@ -1224,6 +1496,14 @@ int main(int argc, char *argv[]){
     }
     else if (mode=="statistics"){
         statisticscli();    
+    }
+    else if (mode=="hex") {
+        suggestions();
+        char cmd;
+        do {
+            cmd = safeInput<char>("HEX (e/d/x/b/r/w/p/l/f/q): ");
+            hex_operators(cmd);
+        } while (cmd != 'q');
     }
     else {
         if(argc < 5 ){
