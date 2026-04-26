@@ -173,6 +173,12 @@ one file, one compile command, no friction. Having now written ~1200 lines
 in a single translation unit, the micro branch will exist partly as a
 corrective exercise in what headers and separation of concerns actually solve.
 
+---
+
+The microbranch version is in the makes, there are files like header and cpp for
+hexhandler, cpp for math and so on. These will be dropped on the last version V1.5,
+or whenever the monolith reaches 2k lines
+
 ## Future projects worth mentioning
 
 During the summer i promise to make the following in cpp: RSA decrypter, AES decrypter, TLS decrypter, my own pwn implementation library in cpp, and my first GUI app, GUI for calculator
