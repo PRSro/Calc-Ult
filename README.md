@@ -1,4 +1,4 @@
-markdown# Calc-Ult
+Calc-Ult
 
 > A from-scratch terminal calculator built without standard math libraries —
 > every algorithm implemented by hand.
