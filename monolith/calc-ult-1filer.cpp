@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <vector>
 /*---VARIABLES---*/
 //to be transported in another file
 
@@ -331,7 +332,7 @@ void OperationIdentifier(int a, int b, std::string operation) {
 		std::cout << a*b << "\n";
 	}
 	if (operation=="/") {
-		std::cout << a/b << "\n";
+		std::cout << (b != 0 ? a/b : 0) << "\n";
 	}
 	if (operation=="gcd") {
 		std::cout << mgcd(a, b) << "\n";
@@ -435,7 +436,7 @@ void OperationRealidentifier(double a, double b, std::string operation) {
 		std::cout << a*b << "\n";
 	}
 	if (operation=="/") {
-		std::cout << a/b << "\n";
+		std::cout << (b != 0 ? a/b : 0) << "\n";
 	}
 	if (operation=="sqrt") {
 		std::cout << msqrt(a) << " " << msqrt(b) << "\n";
@@ -582,7 +583,6 @@ void stage3(StatData &d) {
 		col++;
 	}
 	std::cout << "\n";
-
 	// divider
 	std::cout << "+";
 	for (int i = 0; i < d.total; i++) {
@@ -590,7 +590,6 @@ void stage3(StatData &d) {
 		std::cout << "+";
 	}
 	std::cout << "\n";
-
 	// rows — find max row count across all column types
 	int maxrows = 0;
 	if (d.numInt  > 0 && d.rowInt  > maxrows) maxrows = d.rowInt;
@@ -616,7 +615,6 @@ void stage3(StatData &d) {
 		}
 		std::cout << "\n";
 	}
-
 	// bottom border
 	std::cout << "+";
 	for (int i = 0; i < d.total; i++) {
@@ -629,17 +627,14 @@ void stage3(StatData &d) {
 void stage4(StatData &d) {
 	std::cout << "\nSTAGE 4: Dataset Computation\n";
 	std::cout << "Available column types and indices:\n";
-
 	// show what columns exist so user knows what to pick
 	for (int i = 0; i < d.numInt;  i++) std::cout << "  INT_"  << i+1 << "  (integer)\n";
 	for (int i = 0; i < d.numReal; i++) std::cout << "  REAL_" << i+1 << " (real)\n";
 	for (int i = 0; i < d.numStr;  i++) std::cout << "  STR_"  << i+1 << "  (string)\n";
-
 	std::cout << "\nSelect column A type [int/real]: ";
 	std::string typeA = safeInput<std::string>("");
 	std::cout << "Select column A index (1-based): ";
 	int idxA = safeInput<int>("") - 1;
-
 	std::cout << "Select column B type [int/real]: ";
 	std::string typeB = safeInput<std::string>("");
 	std::cout << "Select column B index (1-based): ";
@@ -1542,10 +1537,10 @@ void masscli(int *cnr) {
 			a=safeInput<std::string>("Vector 1: ");
 			b=safeInput<std::string>("Vector 2: ");
 			int la=a.length(), lb=b.length(), ma;
-			int anr[a.length()], bnr[b.length()];
+			std::vector<int> anr(a.length()), bnr(b.length());
 			std::string c="";
-			stringToArray(a, b, anr, bnr);
-			ArithmeticIdentifier(anr, bnr, cnr, la, lb, operation, ma);
+			stringToArray(a, b, anr.data(), bnr.data());
+			ArithmeticIdentifier(anr.data(), bnr.data(), cnr, la, lb, operation, ma);
 			ArrayTostring(c, cnr, ma);
 			std::cout << c << "\n";
 		}
@@ -1565,12 +1560,10 @@ void help() {
 	std::cout << "============================================================\n";
 	std::cout << "          CALC-ULT | Ultimate Calculator | Help Guide        \n";
 	std::cout << "============================================================\n\n";
-
 	std::cout << "-- COMPILATION & EXECUTION --\n";
 	std::cout << "  Compile  : g++ calc-ult-1filer.cpp -o calc\n";
 	std::cout << "  Linux/Mac: ./calc <mode> [args]\n";
 	std::cout << "  Windows  : .\\calc <mode> [args]\n\n";
-
 	std::cout << "-- MODES --\n";
 	std::cout << "  ./calc static <a> <b> <operation>   Integer arithmetic (non-interactive)\n";
 	std::cout << "  ./calc interactive                  Interactive integer calculator (REPL)\n";
@@ -1580,7 +1573,6 @@ void help() {
 	std::cout << "  ./calc geometry                     Geometry calculator (2D/3D)\n";
 	std::cout << "  ./calc converter                    Unit converter\n";
 	std::cout << "  ./calc help                         Show this help message\n\n";
-
 	std::cout << "-- STATIC MODE OPERATIONS (./calc static <a> <b> <op>) --\n";
 	std::cout << "  +         Addition\n";
 	std::cout << "  -         Subtraction\n";
@@ -1595,43 +1587,35 @@ void help() {
 	std::cout << "  div2      b / 2^a  (right bit-shift)\n";
 	std::cout << "  sepmul2   2^a\n";
 	std::cout << "  sepdiv2   1 >> a\n\n";
-
 	std::cout << "-- INTERACTIVE MODE (./calc interactive) --\n";
 	std::cout << "  Syntax  : CALC: <operation> <a> <b>\n";
 	std::cout << "  NOTE    : For '%', 'simpledebt', 'complexdebt' — only type the operation, prompts follow\n";
 	std::cout << "  exit    : Quit interactive mode\n\n";
-
 	std::cout << "-- MASTER MODE (./calc master) — real numbers --\n";
 	std::cout << "  Syntax  : CALC: <operation> <a> <b>\n";
 	std::cout << "  Supports: +  -  *  /  sqrt  %\n";
 	std::cout << "  exit    : Quit master mode\n\n";
-
 	std::cout << "-- MASS MODE (./calc mass) — big integers up to 1000 digits --\n";
 	std::cout << "  Syntax  : CALC: <operation> <a> <b>\n";
 	std::cout << "  Supports: +  -\n";
 	std::cout << "  exit    : Quit mass mode\n\n";
-
 	std::cout << "-- FINANCIAL MODE (./calc financial) --\n";
 	std::cout << "  %           Percentage: what % is the smaller of the larger number\n";
 	std::cout << "  simpledebt  Simple interest: total interest, yearly & monthly pay, daily impact\n";
 	std::cout << "  complexdebt Compound interest: total and per-year breakdown\n\n";
-
 	std::cout << "-- GEOMETRY MODE (./calc geometry) --\n";
 	std::cout << "  [1] 2D Cartesian — shapes: square, hexagon, circle, cartezian (point sets)\n";
 	std::cout << "      cartezian sub-tasks: multidistance, midpoints, certain distance, slope\n";
 	std::cout << "  [2] 3D Cartesian — (coming soon)\n";
 	std::cout << "  [3] Trigonometric values — (coming soon)\n";
 	std::cout << "  [4] Calculus\n\n";
-
 	std::cout << "-- CONVERTER MODE (./calc converter) --\n";
 	std::cout << "  Units: Volume, Mass, Distance, Surface, Speed, Digital Info Storage [dig],\n";
 	std::cout << "         Density, Inch-to-Cm, Feet-to-m\n\n";
-
 	std::cout << "-- CONSTANTS USED INTERNALLY --\n";
 	std::cout << "  e  = 2.71828182845904523536\n";
 	std::cout << "  pi = 3.14159265358979323846\n";
 	std::cout << " ln2 = 0.6931471805599453\n\n";
-
 	std::cout << "============================================================\n";
 	std::cout << "  Version note: geometry 3D, trig, and calculus are stubs.\n";
 	std::cout << "  Mass mode supports + and - only as of current version.\n";
@@ -1642,6 +1626,7 @@ void help() {
 void massconverter() {
 	std::cout << "The mass converter is supposed to convert certain units" << "\n";
 	std::string converter=safeInput<std::string>( "Choose measure to convert: Volume, Mass, Distance, Surface, Speed, Digital Info Storage [dig], Density, Inch-to-Cm, Feet-to-m: ");
+    // VOlume = scara prefixe = identificam prefix = vedem cu cat * (mpow ( 10, -1) etc conversie = afisam variabila si unitarea in SI
 }
 
 const char padding='0';
@@ -1965,8 +1950,14 @@ int main(int argc, char *argv[]) {
 			help();
 			return 1;
 		}
-		int a=std::stoi(argv[2]);
-		int b=std::stoi(argv[3]);
+		int a, b;
+		try {
+			a=std::stoi(argv[2]);
+			b=std::stoi(argv[3]);
+		} catch (...) {
+			std::cout << "Error: <a> and <b> must be integers.\n";
+			return 1;
+		}
 		std::string operation=argv[4];
 		if (mode=="static") {
 			OperationIdentifier(a, b, operation);
